@@ -148,3 +148,47 @@ This module facilitates the direct link between the buyer's interest and the far
 
 **5. Administrative Oversight and Moderation Panel**
 The administrative panel provides visual insights into system-wide performance, including total user counts and product distributions. It empowers the administrator to moderate the marketplace by managing user statuses—such as blocking or deleting accounts—and removing inappropriate product listings to maintain platform integrity.
+
+---
+
+## 5. CONCLUSION AND SUGGESTIONS
+
+### 5.1 CONCLUSION
+
+The Farm to Market project successfully demonstrates the implementation of a robust, offline-capable digital marketplace designed to empower the agricultural community. By leveraging modern web technologies and a localized hosting architecture, the system provides a resilient platform that operates independently of internet connectivity, which is a critical requirement for rural deployment. The completion of this project fulfills the primary objective of eliminating intermediaries and fostering direct communication between farmers and buyers through a transparent and secure digital inquiry system. The role-based dashboards ensure and organized management experience for all users, ultimately contributing to a more efficient and equitable local agricultural economy.
+
+Looking ahead, while the current system provides a solid foundation for offline trade, there are several suggestions for future enhancements that could further increase its impact. The integration of a local SMS notification system could alert farmers to new inquiries without requiring them to check the dashboard constantly. Additionally, the inclusion of a localized price-trend analysis module would provide farmers with even greater insights into seasonal demand, helping them plan their harvests more effectively. As infrastructure improves, the system could also be expanded to support hybrid connectivity, allowing for periodic synchronization with centralized cloud databases while maintaining its core offline strengths.
+
+---
+
+## BIBLIOGRAPHY
+
+The development of the Farm to Market system was informed by several key technical resources and documentation materials. The core backend architecture was built following the official Node.js and Express.js documentation, which provided essential guidance on RESTful API design and middleware implementation. Database management was strictly aligned with the MySQL 8.0 Reference Manual to ensure optimized query performance and data integrity. On the frontend, the React.js official documentation was the primary resource for state management and component structure, while MDN Web Docs served as the comprehensive reference for modern CSS and JavaScript standards throughout the design and development phases.
+
+---
+
+## APPENDICES
+
+### APPENDIX – A (SCREEN FORMAT)
+
+A1. Home Page (Hero and Features Section)
+A2. User Registration Page (Role-Based Selection)
+A3. Secure Login Page (Credential Entry)
+A4. Farmer Dashboard (Stats and Product Cards)
+A5. Add New Product Form (Image Upload and Categorization)
+A6. Edit Existing Product Page (Inventory Management)
+A7. Buyer Dashboard (Product Discovery and Search)
+A8. Product Details Page (Full Description and Profile)
+A9. Buyer Inquiry Form (Direct Communication Hub)
+A10. Buyer Inquiries History Page (Sent Message Trackers)
+A11. Admin Dashboard (User and Product Management)
+A12. Admin Statistics View (System-Wide Analytics)
+
+### APPENDIX – B (REPORT FORMS PAGES)
+
+B1. User Account Registration Detail Sheet
+B2. Farmer Inventory and Product Listing Report
+B3. Buyer Inquiry and Interest Summary Report
+B4. Admin System Audit and Activity Trail Log
+B5. Active User Status and Role Distribution Chart
+B6. Seasonal Product Category Distribution Overview
