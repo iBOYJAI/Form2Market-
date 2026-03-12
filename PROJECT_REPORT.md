@@ -61,3 +61,90 @@ Storage requirements are remarkably light, needing only about 500 MB of availabl
 The platform is built upon a reliable software stack that prioritizes stability and local performance. It is fully compatible with modern operating systems such as Windows 10 and Windows 11, with 64-bit versions being recommended for better resource management. The core of the database operations is handled by the XAMPP Control Panel, specifically utilizing the MySQL or MariaDB services which provide a robust relational database environment. The backend logic is powered by Node.js, specifically version 16.x or higher, which provides the necessary runtime environment for the Express-based API server.
 
 For development and maintenance, the system uses npm as the primary package manager to handle all internal dependencies efficiently. Users can access the platform through any modern web browser such as Google Chrome, Mozilla Firefox, or Microsoft Edge, provided they are updated to recent versions to support modern React components and CSS styling. If any local configurations or code modifications are required, Visual Studio Code is the recommended development tool due to its excellent support for the JavaScript and Markdown languages used throughout the project.
+
+---
+
+## 3. SYSTEM DESIGN
+
+### 3.1 DATA FLOW DIAGRAM (DFD)
+
+#### DFD LEVEL 0 — CONTEXT DIAGRAM
+The Context Diagram of the Farm to Market system represents the highest-level view of the initial business logic. In this diagram, the entire system is treated as a single process that interacts with external entities including Farmers, Buyers, and Administrators. Farmers provide product data and receive inquiry notifications, while Buyers input search queries and send inquiries to the system. The Administrator interacts with the system to perform monitoring, user moderation, and content management tasks, ensuring that the local marketplace operates within defined parameters.
+
+#### DFD LEVEL 1 — MAJOR PROCESSES
+The Level 1 DFD breaks down the context diagram into several key sub-processes that manage the flow of information within the offline environment. The primary processes included are User Authentication, Product Management, Inquiry Processing, and System Administration. The Authentication process handles secure credential verification and role assignment. Product Management allows for the creation and storage of agricultural listings in the local database. Inquiry Processing facilitates the digital bridge between buyers and producers, while the Administration process manages the integrity of user accounts and global site content.
+
+### 3.2 ENTITY RELATIONSHIP DIAGRAM
+The ER Diagram for Farm to Market illustrates the logical relationships between the core data entities of the system. The central entity is the User, which possesses attributes such as name, email, and role, and maintains a one-to-many relationship with both Products and Inquiries. A Farmer (User) can list multiple Products, while a Buyer (User) can initiate multiple Inquiries. Each Inquiry is linked to exactly one Product and one Buyer, forming a relational chain that ensures all communications are tracked back to specific users and agricultural items. This structure maintains high referential integrity and supports complex queries for local market analytics.
+
+### 3.3 FILE SPECIFICATIONS
+The database schema consists of several interconnected tables that ensure detailed record keeping and referential integrity for the marketplace system. Each table is designed with specific primary and foreign keys to maintain a normalized data structure.
+
+**Table Name: users**
+Purpose: Stores authentication and profile data for all authorized farmers, buyers, and admins.
+
+| Field name | Data type | Size | Constraints | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| id | Integer | 11 | Primary Key | Unique User ID |
+| name | Varchar | 100 | Not Null | User's Full Name |
+| email | Varchar | 191 | Unique | Unique Email Login |
+| password | Varchar | 255 | Not Null | Hashed Password |
+| role | Enum | - | Not Null | farmer, buyer, admin |
+| status | Enum | - | Default: active | active or blocked |
+| created_at | Timestamp | - | - | Registration Date |
+
+**Table Name: products**
+Purpose: Maintains the catalog of all agricultural produce listed by farmers.
+
+| Field name | Data type | Size | Constraints | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| id | Integer | 11 | Primary Key | Unique Product ID |
+| farmer_id | Integer | 11 | Foreign Key | Owner (User ID) |
+| name | Varchar | 200 | Not Null | Product Title |
+| category | Varchar | 100 | Not Null | Produce Category |
+| price | Decimal | 10,2 | Not Null | Price per Unit |
+| quantity | Integer | 11 | Not Null | Available Amount |
+| description | Text | - | - | Product Details |
+| image_path | Varchar | 255 | - | Local Image Path |
+
+**Table Name: inquiries**
+Purpose: Records digital communications between buyers and farmers regarding specific products.
+
+| Field name | Data type | Size | Constraints | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| id | Integer | 11 | Primary Key | Unique Inquiry ID |
+| product_id | Integer | 11 | Foreign Key | Linked Product |
+| buyer_id | Integer | 11 | Foreign Key | Sender (User ID) |
+| message | Text | - | Not Null | Inquiry Content |
+| created_at | Timestamp | - | - | Time of Inquiry |
+| read_status | TinyInt | 1 | Default: 0 | Read (1) or Unread (0) |
+
+**Table Name: contact_messages**
+Purpose: Stores general inquiries from the public contact form.
+
+| Field name | Data type | Size | Constraints | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| id | Integer | 11 | Primary Key | Unique Message ID |
+| name | Varchar | 100 | Not Null | Sender Name |
+| email | Varchar | 191 | Not Null | Sender Email |
+| subject | Varchar | 150 | Not Null | Message Subject |
+| message | Text | - | Not Null | Message Body |
+| created_at | Timestamp | - | - | Sent Time |
+
+### 3.4 MODULE SPECIFICATIONS
+The system architecture is divided into several modules to handle specific administrative and operational tasks. Each module is designed to interact with the core database while providing a seamless user interface for the farmers, buyers, and administrators.
+
+**1. User Authentication and Account Management**
+This module handles secure login for all users via hashed password verification and role-based session initialization. It allows new users to register as either Farmers or Buyers, ensuring that each user has appropriate permissions for their specific role while protecting the system from unauthorized access.
+
+**2. Farmer Product Management Engine**
+The product management engine allows Farmers to maintain a professional digital catalog of their produce. It provides full CRUD (Create, Read, Update, Delete) capabilities including the ability to upload product images, set competitive pricing, and update inventory levels in real-time as stock changes.
+
+**3. Buyer Discovery and Marketplace Hub**
+The marketplace hub provides a professional interface for Buyers to discover high-quality local produce. It features advanced search and category-based filtering tools that allow buyers to quickly locate specific items, view detailed farmer information, and initiate direct communication with producers.
+
+**4. Digital Inquiry and Communication System**
+This module facilitates the direct link between the buyer's interest and the farmer's supply. It allows buyers to send detailed inquiries about specific products and enables farmers to view and manage these inquiries from their dashboard, fostering a transparent negotiation environment.
+
+**5. Administrative Oversight and Moderation Panel**
+The administrative panel provides visual insights into system-wide performance, including total user counts and product distributions. It empowers the administrator to moderate the marketplace by managing user statuses—such as blocking or deleting accounts—and removing inappropriate product listings to maintain platform integrity.
