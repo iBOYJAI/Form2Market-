@@ -1,7 +1,19 @@
-<footer style="text-align:center; padding: 2rem; color:var(--text-muted); font-size: 0.75rem; border-top: 1px solid var(--border-dim); margin-top: 3rem;">
-    &copy; <?= date('Y') ?> Farm2Market | Offline Agricultural Marketplace
-</footer>
+    <?php if ($layout_mode === 'dashboard'): ?>
+    </main>
+</div>
+<?php endif; ?>
 
 <script src="/farm2market/assets/js/main.js"></script>
+<?php if ($layout_mode === 'dashboard'): ?>
+<script>
+// Toggle notification panel
+document.getElementById('notif-trigger')?.addEventListener('click', function(e) {
+    document.getElementById('notif-panel')?.classList.toggle('open');
+    e.stopPropagation();
+});
+document.addEventListener('click', () => document.getElementById('notif-panel')?.classList.remove('open'));
+</script>
+<?php endif; ?>
+
 </body>
 </html>

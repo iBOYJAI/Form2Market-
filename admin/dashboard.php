@@ -15,7 +15,7 @@ $stats = [
 
 // Recent Orders
 $recent_orders = $pdo->query("
-    SELECT o.Order_ID, c.Name as Customer, p.Product_Name as Product, o.Total_Amount, o.Status, o.Date 
+    SELECT o.Order_ID, c.Name as Customer, p.Product_Name as Product, o.Total_Amount, o.Status, o.Date, c.Customer_ID 
     FROM orders o 
     JOIN customers c ON o.Customer_ID = c.Customer_ID 
     JOIN products p ON o.Product_ID = p.Product_ID 
@@ -24,7 +24,7 @@ $recent_orders = $pdo->query("
 
 // Pending Products
 $pending = $pdo->query("
-    SELECT p.Product_ID, p.Product_Name, p.Price, f.Name as Farmer 
+    SELECT p.Product_ID, p.Product_Name, p.Price, f.Name as Farmer, p.Image 
     FROM products p 
     JOIN farmers f ON p.Farmer_ID = f.Farmer_ID 
     WHERE p.Status = 'pending' LIMIT 5
@@ -39,111 +39,255 @@ if (isset($_GET['action'], $_GET['product_id'])) {
     header("Location: dashboard.php?success=1");
     exit();
 }
+
+include '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="container">
-    <div class="section-header">
-        <div>
-            <h2>> ADMIN CONTROL CENTER</h2>
-            <p>System Overview & Metrics</p>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="breadcrumb">
+            <a href="#">Admin</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Dashboard</span>
+        </div>
+        <h1 class="page-title">Administrative Console</h1>
+        <p class="page-subtitle">Real-time agricultural network metrics and moderation.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-outline">
+            <img src="<?= NI ?>ni-share.png"> Export Stats
+        </button>
+        <img src="<?= OC ?>oc-target.png" style="width: 90px; opacity: 0.15; position: absolute; top: 1rem; right: 2rem; pointer-events: none;">
+    </div>
+</div>
+
+<!-- Stat Grid -->
+<div class="stat-grid mb-4">
+    <div class="stat-card">
+        <div class="stat-icon-wrap green">
+            <img src="<?= NI ?>ni-picking-fruit.png">
+        </div>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['farmers'] ?></div>
+            <div class="stat-lbl">Active Farmers</div>
         </div>
     </div>
-
-    <!-- Stat Cards -->
-    <div class="grid-3 mb-3">
-        <div class="card text-center">
-            <div class="stat-value"><?= $stats['farmers'] ?></div>
-            <div class="stat-label">Total Farmers</div>
+    <div class="stat-card blue">
+        <div class="stat-icon-wrap blue">
+            <img src="<?= NI ?>ni-users.png">
         </div>
-        <div class="card text-center">
-            <div class="stat-value"><?= $stats['customers'] ?></div>
-            <div class="stat-label">Total Customers</div>
-        </div>
-        <div class="card text-center">
-            <div class="stat-value"><?= $stats['products'] ?></div>
-            <div class="stat-label">Total Products</div>
-        </div>
-        <div class="card text-center">
-            <div class="stat-value" style="color:var(--amber); text-shadow:0 0 10px var(--amber-dim)"><?= $stats['pending'] ?></div>
-            <div class="stat-label">Pending Approvals</div>
-        </div>
-        <div class="card text-center">
-            <div class="stat-value"><?= $stats['orders'] ?></div>
-            <div class="stat-label">Total Orders</div>
-        </div>
-        <div class="card text-center">
-            <div class="stat-value">₹<?= number_format($stats['revenue'], 2) ?></div>
-            <div class="stat-label">Total Revenue</div>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['customers'] ?></div>
+            <div class="stat-lbl">Customers</div>
         </div>
     </div>
-
-    <div class="grid-2">
-        <!-- Pending Products Quick List -->
-        <div class="card" style="padding:0; overflow:hidden;">
-            <div style="background:var(--bg-primary); padding:1rem; border-bottom:1px solid var(--border-dim);">
-                <span class="glow-amber" style="font-weight:700;">> ACTION REQUIRED: PENDING LISTINGS</span>
-            </div>
-            <?php if(empty($pending)): ?>
-                <div style="padding:2rem; text-align:center; color:var(--text-muted)">All clear. No pending items.</div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr><th>Product</th><th>Farmer</th><th>Price</th><th>Action</th></tr>
-                        <?php foreach($pending as $p): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($p['Product_Name']) ?></td>
-                            <td><?= htmlspecialchars($p['Farmer']) ?></td>
-                            <td>₹<?= $p['Price'] ?></td>
-                            <td>
-                                <a href="?action=approve&product_id=<?= $p['Product_ID'] ?>" class="btn btn-primary btn-sm">OK</a>
-                                <a href="?action=reject&product_id=<?= $p['Product_ID'] ?>" class="btn btn-danger btn-sm">X</a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-            <?php endif; ?>
+    <div class="stat-card gold">
+        <div class="stat-icon-wrap gold">
+            <img src="<?= NI ?>ni-exclamation-triangle.png">
         </div>
-        
-        <!-- Charts Placeholders (Chart.js will render here if added) -->
-        <div class="card">
-             <div style="background:var(--bg-primary); padding:1rem; border-bottom:1px solid var(--border-dim); margin:-1.5rem -1.5rem 1.5rem -1.5rem;">
-                <span class="glow" style="font-weight:700;">> SYSTEM METRICS</span>
-            </div>
-            <div style="height: 250px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); border:1px dashed var(--border-dim)">
-                [ CHART RENDER AREA ]<br>
-                (See REPORTS for full graphs)
-            </div>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['pending'] ?></div>
+            <div class="stat-lbl">Pending Items</div>
         </div>
     </div>
-
-    <!-- Recent Orders -->
-    <div class="card mt-3" style="padding:0; overflow:hidden;">
-        <div style="background:var(--bg-primary); padding:1rem; border-bottom:1px solid var(--border-dim);">
-            <span class="glow" style="font-weight:700;">> RECENT ORDERS</span>
+    <div class="stat-card teal">
+        <div class="stat-icon-wrap teal">
+            <img src="<?= NI ?>ni-shopping-cart.png">
         </div>
-        <div class="table-responsive">
-            <table>
-                <tr>
-                    <th>ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th><th>Date</th>
-                </tr>
-                <?php foreach($recent_orders as $o): ?>
-                <tr>
-                    <td>#<?= $o['Order_ID'] ?></td>
-                    <td><?= htmlspecialchars($o['Customer']) ?></td>
-                    <td><?= htmlspecialchars($o['Product']) ?></td>
-                    <td>₹<?= $o['Total_Amount'] ?></td>
-                    <td><span class="badge badge-<?= $o['Status'] ?>"><?= $o['Status'] ?></span></td>
-                    <td><?= date('M d, y H:i', strtotime($o['Date'])) ?></td>
-                </tr>
-                <?php endforeach; ?>
-                <?php if(empty($recent_orders)): ?>
-                <tr><td colspan="6" class="text-center">No orders yet.</td></tr>
-                <?php endif; ?>
-            </table>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['products'] ?></div>
+            <div class="stat-lbl">Total Products</div>
+        </div>
+    </div>
+    <div class="stat-card purple">
+        <div class="stat-icon-wrap purple">
+            <img src="<?= NI ?>ni-clipboard-bar-chart.png">
+        </div>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['orders'] ?></div>
+            <div class="stat-lbl">Total Orders</div>
+        </div>
+    </div>
+    <div class="stat-card gold">
+        <div class="stat-icon-wrap gold">
+            <img src="<?= NC ?>nc-gauge-price-sensitivity.png">
+        </div>
+        <div class="stat-info">
+            <div class="stat-val">₹<?= number_format($stats['revenue'] / 1000, 1) ?>k</div>
+            <div class="stat-lbl">Revenue</div>
         </div>
     </div>
 </div>
+
+<div class="g2 mb-4">
+    <!-- Pending Approvals -->
+    <div class="card">
+        <div class="card-head">
+            <h3 class="card-head-title">Pending Approvals</h3>
+            <a href="manage_products.php" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <?php if(empty($pending)): ?>
+                <div class="empty-state">
+                    <img src="<?= NC ?>nc-no-answer.png" class="empty-illo">
+                    <h3>All Clear</h3>
+                    <p>There are no pending product listings requiring moderation.</p>
+                </div>
+            <?php else: ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Farmer</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($pending as $p): ?>
+                        <tr>
+                            <td>
+                                <div class="td-product">
+                                    <div class="td-product-img">
+                                        <?php if($p['Image']): ?>
+                                            <img src="/farm2market/uploads/products/<?= $p['Image'] ?>">
+                                        <?php else: ?>
+                                            <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.3; padding:10px;">
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="td-name"><?= htmlspecialchars($p['Product_Name']) ?></span>
+                                </div>
+                            </td>
+                            <td><?= htmlspecialchars($p['Farmer']) ?></td>
+                            <td class="td-name">₹<?= $p['Price'] ?></td>
+                            <td>
+                                <div class="flex-gap gap-sm">
+                                    <a href="?action=approve&product_id=<?= $p['Product_ID'] ?>" class="btn btn-primary btn-icon btn-sm" title="Approve">
+                                        <img src="<?= NI ?>ni-check.png">
+                                    </a>
+                                    <a href="?action=reject&product_id=<?= $p['Product_ID'] ?>" class="btn btn-danger btn-icon btn-sm" title="Reject">
+                                        <img src="<?= NI ?>ni-x.png">
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- System Metrics Placeholder -->
+    <div class="card">
+        <div class="card-head">
+            <h3 class="card-head-title">System Growth</h3>
+            <div class="chart-legend">
+                <div class="legend-lbl"><span class="legend-dot" style="background:var(--green-500)"></span> Orders</div>
+                <div class="legend-lbl"><span class="legend-dot" style="background:var(--gold-400)"></span> Users</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="height: 280px; display:flex; align-items:center; justify-content:center; background:var(--bg-secondary); border-radius:var(--radius-lg); border:1px dashed var(--border-mid);">
+                <canvas id="dashboardChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="card">
+    <div class="card-head">
+        <h3 class="card-head-title">Recent Network Orders</h3>
+        <a href="manage_orders.php" class="btn btn-outline btn-sm">Manage All Orders</a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($recent_orders as $o): ?>
+                <tr>
+                    <td class="td-name">#<?= str_pad($o['Order_ID'], 5, '0', STR_PAD_LEFT) ?></td>
+                    <td>
+                        <div class="td-user">
+                            <div class="td-avatar">
+                                <img src="<?= avatar($o['Customer_ID']) ?>">
+                            </div>
+                            <span class="td-name"><?= htmlspecialchars($o['Customer']) ?></span>
+                        </div>
+                    </td>
+                    <td><?= htmlspecialchars($o['Product']) ?></td>
+                    <td class="td-name">₹<?= number_format($o['Total_Amount'], 2) ?></td>
+                    <td>
+                        <div class="flex-gap">
+                            <?php 
+                                $status_icon = 'ni-paper-plane.png';
+                                if($o['Status'] === 'confirmed') $status_icon = 'ni-double-check.png';
+                                elseif($o['Status'] === 'ready') $status_icon = 'ni-check-hand.png';
+                                elseif($o['Status'] === 'delivered') $status_icon = 'ni-ok.png';
+                                elseif($o['Status'] === 'cancelled') $status_icon = 'ni-x.png';
+                            ?>
+                            <img src="<?= NI . $status_icon ?>" style="width:14px; opacity:0.6;">
+                            <span class="badge badge-<?= $o['Status'] ?>"><?= $o['Status'] ?></span>
+                        </div>
+                    </td>
+                    <td class="td-sub"><?= date('M d, Y • H:i', strtotime($o['Date'])) ?></td>
+                </tr>
+                <?php endforeach; ?>
+                <?php if(empty($recent_orders)): ?>
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <img src="<?= EC ?>ec-reduce-customer-churn.png" class="empty-illo" style="width:120px; height:120px;">
+                            <p>No transactions recorded yet.</p>
+                        </div>
+                    </td>
+                </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('dashboardChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Orders',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderColor: '#15803d',
+                    backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { display: false },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+});
+</script>
 
 <?php include '../includes/footer.php'; ?>

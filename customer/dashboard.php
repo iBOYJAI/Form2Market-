@@ -14,7 +14,7 @@ $stats = [
 
 // Recent Orders
 $recent_orders = $pdo->query("
-    SELECT o.*, p.Product_Name, f.Name as Farmer_Name 
+    SELECT o.*, p.Product_Name, f.Name as Farmer_Name, f.Farmer_ID 
     FROM orders o 
     JOIN products p ON o.Product_ID = p.Product_ID 
     JOIN farmers f ON o.Farmer_ID = f.Farmer_ID 
@@ -25,82 +25,140 @@ $recent_orders = $pdo->query("
 // Recommended Products (Random approved)
 $recommended = $pdo->query("SELECT p.*, f.Name as Farmer FROM products p JOIN farmers f ON p.Farmer_ID = f.Farmer_ID WHERE p.Status = 'approved' AND p.Quantity > 0 ORDER BY RAND() LIMIT 4")->fetchAll();
 
+include '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="container">
-    <div class="section-header">
-        <div>
-            <h2>> CONSUMER TERMINAL</h2>
-            <p>Welcome, <?= htmlspecialchars($_SESSION['name']) ?></p>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="breadcrumb">
+            <a href="#">Customer</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Dashboard</span>
         </div>
-        <a href="browse.php" class="btn btn-primary">[ ENTER MARKETPLACE ]</a>
+        <h1 class="page-title">Personal Terminal</h1>
+        <p class="page-subtitle">Welcome back, <?= htmlspecialchars($_SESSION['name']) ?>. Explore the marketplace and track your procurements.</p>
     </div>
+    <div class="page-actions">
+        <a href="browse.php" class="btn btn-primary">
+            <img src="<?= NI ?>ni-shopping-bag.png"> Enter Marketplace
+        </a>
+        <img src="<?= NC ?>nc-woman-typing-on-machine.png" style="width: 100px; opacity: 0.15; position: absolute; top: 1rem; right: 2rem; pointer-events: none;">
+    </div>
+</div>
 
-    <!-- Stat Cards -->
-    <div class="grid-3 mb-3">
-        <div class="card text-center">
-            <div class="stat-value"><?= $stats['orders'] ?></div>
-            <div class="stat-label">Total Procurements</div>
+<!-- Stat Grid -->
+<div class="stat-grid mb-4">
+    <div class="stat-card purple">
+        <div class="stat-icon-wrap purple">
+            <img src="<?= NI ?>ni-shopping-cart.png">
         </div>
-        <div class="card text-center">
-            <div class="stat-value">₹<?= number_format($stats['spent'], 2) ?></div>
-            <div class="stat-label">Total Expenditure</div>
-        </div>
-        <div class="card text-center">
-            <div class="stat-value glow-amber" style="color:var(--amber);"><?= $stats['pending'] ?></div>
-            <div class="stat-label">Active Transfers</div>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['orders'] ?></div>
+            <div class="stat-lbl">Procurements</div>
         </div>
     </div>
+    <div class="stat-card gold">
+        <div class="stat-icon-wrap gold">
+            <img src="<?= NC ?>nc-gauge-price-sensitivity.png">
+        </div>
+        <div class="stat-info">
+            <div class="stat-val">₹<?= number_format($stats['spent'], 2) ?></div>
+            <div class="stat-lbl">Total Expenditure</div>
+        </div>
+    </div>
+    <div class="stat-card gold">
+        <div class="stat-icon-wrap gold">
+            <img src="<?= NI ?>ni-paper-plane.png">
+        </div>
+        <div class="stat-info">
+            <div class="stat-val"><?= $stats['pending'] ?></div>
+            <div class="stat-lbl">Active Transfers</div>
+        </div>
+    </div>
+</div>
 
-    <div class="grid-2">
-        <!-- Recent Orders -->
-        <div class="card" style="padding:0; overflow:hidden;">
-            <div class="flex justify-between align-center" style="background:var(--bg-primary); padding:1rem; border-bottom:1px solid var(--border-dim);">
-                <span class="glow" style="font-weight:700;">> RECENT LOGISTICS</span>
-                <a href="my_orders.php" class="btn btn-sm" style="border:1px solid var(--border-dim)">VIEW LOGS</a>
-            </div>
-            <div class="table-responsive">
+<div class="g2 mb-4">
+    <!-- Recent Logistics -->
+    <div class="card">
+        <div class="card-head">
+            <h3 class="card-head-title">Transfer History</h3>
+            <a href="my_orders.php" class="btn btn-ghost btn-sm">View Logs</a>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <?php if(empty($recent_orders)): ?>
+                <div class="empty-state">
+                    <img src="<?= EC ?>ec-reduce-customer-churn.png" class="empty-illo" style="width: 100px;">
+                    <h3>No Active Transfers</h3>
+                    <p>Your procurement history is currently empty.</p>
+                </div>
+            <?php else: ?>
                 <table>
-                    <tr><th>Provider</th><th>Asset</th><th>Total</th><th>Status</th></tr>
-                    <?php foreach($recent_orders as $o): ?>
-                    <tr>
-                        <td style="font-size:0.8rem;"><?= htmlspecialchars($o['Farmer_Name']) ?></td>
-                        <td><?= htmlspecialchars($o['Product_Name']) ?> x<?= $o['Quantity'] ?></td>
-                        <td style="font-weight:700;">₹<?= $o['Total_Amount'] ?></td>
-                        <td><span class="badge badge-<?= $o['Status'] ?>"><?= $o['Status'] ?></span></td>
-                    </tr>
-                    <?php endforeach; ?>
-                    <?php if(empty($recent_orders)): ?>
-                    <tr><td colspan="4" class="text-center">No recent procurements.</td></tr>
-                    <?php endif; ?>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Asset</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($recent_orders as $o): ?>
+                        <tr>
+                            <td>
+                                <div class="td-user">
+                                    <div class="td-avatar">
+                                        <img src="<?= avatar($o['Farmer_ID']) ?>">
+                                    </div>
+                                    <span class="td-name"><?= htmlspecialchars($o['Farmer_Name']) ?></span>
+                                </div>
+                            </td>
+                            <td><?= htmlspecialchars($o['Product_Name']) ?> x<?= $o['Quantity'] ?></td>
+                            <td class="td-name">₹<?= number_format($o['Total_Amount'], 2) ?></td>
+                            <td>
+                                <span class="badge badge-<?= $o['Status'] ?>"><?= $o['Status'] ?></span>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
                 </table>
-            </div>
+            <?php endif; ?>
         </div>
+    </div>
 
-        <!-- Recommended Products -->
-        <div class="card" style="padding:0; overflow:hidden;">
-            <div class="flex justify-between align-center" style="background:var(--bg-primary); padding:1rem; border-bottom:1px solid var(--border-dim);">
-                <span class="glow-amber" style="font-weight:700;">> SUGGESTED ASSETS</span>
-                <a href="browse.php" class="btn btn-sm" style="border:1px solid var(--border-dim)">BROWSE ALL</a>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem;">
+    <!-- Suggested Assets -->
+    <div class="card">
+        <div class="card-head">
+            <h3 class="card-head-title">Market Suggestions</h3>
+            <a href="browse.php" class="btn btn-ghost btn-sm">Explore All</a>
+        </div>
+        <div class="card-body">
+            <div class="product-mini-grid">
                 <?php foreach($recommended as $p): ?>
-                <a href="product_detail.php?id=<?= $p['Product_ID'] ?>" style="text-decoration:none;">
-                    <div class="product-card" style="border-color:var(--green-dim); height:auto;">
-                        <?php if($p['Image_Path'] && file_exists('../uploads/products/'.$p['Image_Path'])): ?>
-                            <img src="/farm2market/uploads/products/<?= $p['Image_Path'] ?>" style="height:120px;">
+                <a href="product_detail.php?id=<?= $p['Product_ID'] ?>" class="p-mini-card" style="text-decoration: none; color: inherit;">
+                    <div class="p-mini-img">
+                        <?php 
+                            $img = $p['Image_Path'] ?? $p['Image'] ?? null;
+                            if($img): 
+                        ?>
+                            <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>">
                         <?php else: ?>
-                            <div class="img-placeholder" style="height:120px;">NO IMG</div>
+                            <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.2; padding:15px;">
                         <?php endif; ?>
-                        <div class="product-card-body" style="padding:0.75rem;">
-                            <div class="product-name glow" style="font-size:0.85rem; margin:0;"><?= htmlspecialchars($p['Product_Name']) ?></div>
-                            <div style="color:var(--amber); font-weight:700; font-size:1rem; margin-top:0.25rem;">₹<?= $p['Price'] ?></div>
-                            <div style="color:var(--text-muted); font-size:0.7rem; margin-top:0.5rem;">SYS: <?= htmlspecialchars($p['Farmer']) ?></div>
+                    </div>
+                    <div class="p-mini-info">
+                        <div class="td-name"><?= htmlspecialchars($p['Product_Name']) ?></div>
+                        <div class="flex-between align-center mt-1">
+                            <span class="td-sub" style="font-size: 0.65rem;"><?= htmlspecialchars($p['Farmer']) ?></span>
+                            <span class="td-name" style="color:var(--green-600)">₹<?= $p['Price'] ?></span>
                         </div>
                     </div>
                 </a>
                 <?php endforeach; ?>
+                <?php if(empty($recommended)): ?>
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <p>No agricultural assets available in current network scan.</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

@@ -47,73 +47,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$layout_mode = 'auth';
+require_once '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="auth-wrapper" style="padding: 3rem 1rem;">
-    <div class="auth-card" style="max-width: 500px;">
-        <h2 class="auth-title">NEW USER REGISTRATION</h2>
-        <p class="auth-subtitle">Create a localized trading identity.</p>
-
-        <?php if($error): ?>
-            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-
-        <div class="role-tabs">
-            <button class="role-tab active" id="tab-farmer" onclick="switchRole('farmer')">FARMER</button>
-            <button class="role-tab" id="tab-customer" onclick="switchRole('customer')">CUSTOMER</button>
+<div class="auth-page">
+    <div class="auth-visual">
+        <div class="auth-illo">
+            <img src="<?= NC ?>nc-improve-signup-experience.png" alt="Register Illustration">
         </div>
+        <h2 class="auth-visual-title">Join the Ecosystem</h2>
+        <p class="auth-visual-sub">Create your localized trading identity and start transacting directly with the source.</p>
+    </div>
 
-        <form method="POST" action="">
-            <input type="hidden" name="role" id="reg-role" value="farmer">
+    <div class="auth-form-side">
+        <div class="auth-box" style="max-width: 500px;">
+            <a href="/farm2market/index.php" class="auth-brand">
+                <div class="ab-icon">
+                    <img src="<?= NI ?>ni-picking-fruit.png" alt="Icon">
+                </div>
+                <div class="ab-name">FARM2MARKET</div>
+            </a>
             
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Full Name *</label>
-                    <input type="text" name="name" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+            <h1 class="auth-title">Create Identity</h1>
+            <p class="auth-sub">Choose your role and provide your details.</p>
+
+            <?php if($error): ?>
+                <div class="alert alert-error">
+                    <img src="<?= NI ?>ni-exclamation-triangle.png">
+                    <?= htmlspecialchars($error) ?>
                 </div>
-                <div class="form-group">
-                    <label>Email Address *</label>
-                    <input type="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
-                </div>
+            <?php endif; ?>
+
+            <div class="role-tabs">
+                <button class="rtab active" onclick="switchRole('farmer', this)">
+                    <img src="<?= NI ?>ni-picking-fruit.png"> Farmer
+                </button>
+                <button class="rtab" onclick="switchRole('customer', this)">
+                    <img src="<?= NI ?>ni-house.png"> Customer
+                </button>
             </div>
 
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Password *</label>
-                    <input type="password" name="password" required>
+            <form method="POST" action="">
+                <input type="hidden" name="role" id="reg-role" value="farmer">
+                
+                <div class="g2">
+                    <div class="form-group">
+                        <label>Full Name <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <img src="<?= NI ?>ni-user.png" class="input-ico">
+                            <input type="text" name="name" required placeholder="John Doe" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <img src="<?= NI ?>ni-inbox.png" class="input-ico">
+                            <input type="email" name="email" required placeholder="john@example.com" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Confirm Password *</label>
-                    <input type="password" name="confirm" required>
+
+                <div class="g2">
+                    <div class="form-group">
+                        <label>Password <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <img src="<?= NI ?>ni-fingerprint-id.png" class="input-ico">
+                            <input type="password" name="password" required placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <img src="<?= NI ?>ni-fingerprint-id.png" class="input-ico">
+                            <input type="password" name="confirm" required placeholder="••••••••">
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" name="phone" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
-            </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-info.png" class="input-ico">
+                        <input type="tel" name="phone" placeholder="+1 (555) 000-0000" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label>Physical Address</label>
-                <textarea name="address" rows="3"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
-            </div>
+                <div class="form-group">
+                    <label>Physical Address</label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-house.png" class="input-ico" style="top: 1.2rem; transform: none;">
+                        <textarea name="address" rows="3" placeholder="Enter your full address..." style="padding-left: 2.4rem;"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
+                    </div>
+                </div>
 
-            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">REGISTER ENTITY</button>
-        </form>
-        
-        <div style="text-align:center; margin-top:1.5rem; font-size:0.8rem;">
-            <a href="login.php" style="color:var(--text-muted)">Already have an identity? Login.</a>
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-2">
+                    Register Identity
+                    <img src="<?= NI ?>ni-arrow-right-circle.png">
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an identity? <a href="login.php">Login Protocol</a>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    function switchRole(role) {
-        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + role).classList.add('active');
+    function switchRole(role, btn) {
+        document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
         document.getElementById('reg-role').value = role;
     }
 </script>
 
-<?php include '../includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

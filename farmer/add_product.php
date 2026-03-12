@@ -54,68 +54,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+include '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="container">
-    <div class="section-header">
-        <div>
-            <h2>> INITIALIZE NEW ASSET</h2>
-            <p>List product for network approval</p>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="breadcrumb">
+            <a href="dashboard.php">Farmer</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Initialize Asset</span>
         </div>
-        <a href="dashboard.php" class="btn btn-sm" style="border:1px solid var(--border-dim)">[ CANCEL / ABORT ]</a>
+        <h1 class="page-title">List New Product</h1>
+        <p class="page-subtitle">Provide agricultural data parameters for network approval.</p>
     </div>
+    <div class="page-actions">
+        <img src="<?= OC ?>oc-taking-note.png" style="width: 100px; opacity: 0.15; position: absolute; top: 1rem; right: 2rem; pointer-events: none;">
+    </div>
+</div>
 
-    <div class="card" style="max-width:800px; margin:0 auto;">
+<div class="card" style="max-width: 800px; margin: 0 auto 3rem;">
+    <div class="card-head">
+        <h3 class="card-head-title">Listing Specifications</h3>
+    </div>
+    <div class="card-body">
         <?php if($error): ?>
-            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+            <div class="alert alert-error mb-4">
+                <img src="<?= NI ?>ni-exclamation-triangle.png">
+                <?= htmlspecialchars($error) ?>
+            </div>
         <?php endif; ?>
 
         <form method="POST" enctype="multipart/form-data">
-            <div class="grid-2">
+            <div class="g2">
                 <div class="form-group">
-                    <label>Product Name *</label>
-                    <input type="text" name="name" required placeholder="e.g. Organic Basil">
+                    <label>Product Name <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-shopping-bag.png" class="input-ico">
+                        <input type="text" name="name" required placeholder="e.g. Organic Basil" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Category *</label>
-                    <select name="category" required>
-                        <option value="">-- Select Type --</option>
-                        <option value="vegetables">Vegetables</option>
-                        <option value="fruits">Fruits</option>
-                        <option value="grains">Grains</option>
-                        <option value="dairy">Dairy</option>
-                        <option value="poultry">Poultry</option>
-                        <option value="spices">Spices</option>
-                        <option value="herbs">Herbs</option>
-                        <option value="other">Other</option>
-                    </select>
+                    <label>Category <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-tag.png" class="input-ico">
+                        <select name="category" required style="padding-left: 2.6rem;">
+                            <option value="">-- Select Type --</option>
+                            <option value="vegetables">Vegetables</option>
+                            <option value="fruits">Fruits</option>
+                            <option value="grains">Grains</option>
+                            <option value="dairy">Dairy</option>
+                            <option value="poultry">Poultry</option>
+                            <option value="spices">Spices</option>
+                            <option value="herbs">Herbs</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid-2">
+            <div class="g2">
                 <div class="form-group">
-                    <label>Price (₹ per unit) *</label>
-                    <input type="number" step="0.01" name="price" required min="1">
+                    <label>Price (₹ per unit) <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-coins.png" class="input-ico">
+                        <input type="number" step="0.01" name="price" required min="1" placeholder="0.00" value="<?= htmlspecialchars($_POST['price'] ?? '') ?>">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Total Available Quantity *</label>
-                    <input type="number" name="quantity" required min="1">
+                    <label>Total Quantity <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-box.png" class="input-ico">
+                        <input type="number" name="quantity" required min="1" placeholder="10" value="<?= htmlspecialchars($_POST['quantity'] ?? '') ?>">
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Descriptive Metadata</label>
-                <textarea name="description" rows="5" placeholder="Details regarding farming method, freshness, etc."></textarea>
+                <div class="input-wrap">
+                    <img src="<?= NI ?>ni-file-text.png" class="input-ico" style="top: 1.2rem; transform: none;">
+                    <textarea name="description" rows="5" placeholder="Details regarding farming method, freshness, etc." style="padding-left: 2.6rem;"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+                </div>
             </div>
 
             <div class="form-group">
                 <label>Visual Asset (Image, Max 2MB)</label>
-                <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
+                <div class="input-wrap">
+                    <img src="<?= NI ?>ni-image.png" class="input-ico">
+                    <input type="file" name="image" accept="image/jpeg,image/png,image/webp" style="padding-left: 2.6rem;">
+                </div>
             </div>
 
-            <div style="margin-top:2rem;">
-                <button type="submit" class="btn btn-primary" style="font-size:1rem; padding:0.8rem 2rem;">[ EXECUTE INSERT ]</button>
+            <div class="flex-gap mt-4">
+                <button type="submit" class="btn btn-primary btn-lg" style="flex: 1;">
+                    Initialize Listing
+                    <img src="<?= NI ?>ni-arrow-right-circle.png">
+                </button>
+                <a href="dashboard.php" class="btn btn-outline btn-lg">Cancel Abort</a>
             </div>
         </form>
     </div>

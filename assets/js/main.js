@@ -62,3 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 });
+
+// Farm2Market Local Chart.js Palette & Defaults
+const F2M_COLORS = {
+  green:  '#15803d',
+  green2: '#3db33d',
+  green3: '#72ce72',
+  gold:   '#d97706',
+  gold2:  '#f59e0b',
+  blue:   '#3b82f6',
+  purple: '#8b5cf6',
+  teal:   '#0d9488',
+  red:    '#ef4444',
+};
+if (typeof Chart !== 'undefined') {
+    Chart.defaults.font.family = 'Sora, sans-serif';
+    Chart.defaults.color = '#5a7a5a';
+}

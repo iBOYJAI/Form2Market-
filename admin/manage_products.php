@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
         $stmt = $pdo->prepare("UPDATE products SET Status = ? WHERE Product_ID = ?");
         $stmt->execute([$status, $id]);
     } elseif ($act === 'delete') {
-        // Option to unlink image if necessary, but DB cascading deletes orders.
         $stmt = $pdo->prepare("DELETE FROM products WHERE Product_ID = ?");
         $stmt->execute([$id]);
     }
@@ -33,65 +32,139 @@ $sql .= " ORDER BY p.Product_ID DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll();
+
+include '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="container">
-    <div class="section-header">
-        <div>
-            <h2>> PRODUCT CATALOG MANAGEMENT</h2>
-            <p>Approve, Reject, or Delete Listed Items</p>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="breadcrumb">
+            <a href="dashboard.php">Admin</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Product Catalog</span>
         </div>
+        <h1 class="page-title">Marketplace Inventory</h1>
+        <p class="page-subtitle">Moderate and manage agricultural listing parameters across the network.</p>
     </div>
-
-    <div style="display:flex; gap:1rem; margin-bottom:1.5rem;">
-        <a href="?status=all" class="btn <?= $filter === 'all' ? 'btn-primary' : 'btn-sm' ?>" style="border:1px solid var(--border-dim)">ALL</a>
-        <a href="?status=pending" class="btn <?= $filter === 'pending' ? 'btn-primary' : 'btn-sm' ?>" style="border:1px solid var(--border-dim)">PENDING</a>
-        <a href="?status=approved" class="btn <?= $filter === 'approved' ? 'btn-primary' : 'btn-sm' ?>" style="border:1px solid var(--border-dim)">APPROVED</a>
-        <a href="?status=rejected" class="btn <?= $filter === 'rejected' ? 'btn-primary' : 'btn-sm' ?>" style="border:1px solid var(--border-dim)">REJECTED</a>
+    <div class="page-actions">
+        <img src="<?= EC ?>ec-analyzing-market-price.png" style="width: 120px; opacity: 0.15; position: absolute; top: 1rem; right: 2.5rem; pointer-events: none;">
     </div>
+</div>
 
-    <div class="card" style="padding:0; overflow:hidden;">
-        <div class="table-responsive">
+<div class="filter-tabs mb-4">
+    <a href="?status=all" class="ftab <?= $filter === 'all' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-house.png"> All Items
+    </a>
+    <a href="?status=pending" class="ftab <?= $filter === 'pending' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-exclamation-triangle.png"> Pending
+    </a>
+    <a href="?status=approved" class="ftab <?= $filter === 'approved' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-check.png"> Approved
+    </a>
+    <a href="?status=rejected" class="ftab <?= $filter === 'rejected' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-x.png"> Rejected
+    </a>
+</div>
+
+<div class="card" style="padding:0;">
+    <div class="card-body" style="padding: 0;">
+        <?php if(empty($products)): ?>
+            <div class="empty-state">
+                <img src="<?= NC ?>nc-no-answer.png" class="empty-illo">
+                <h3>No Products Found</h3>
+                <p>The marketplace has no listings matching current criteria.</p>
+            </div>
+        <?php else: ?>
             <table>
-                <tr>
-                    <th width="50">IMG</th>
-                    <th>ID</th><th>Provider</th><th>Product Name</th><th>Category</th><th>Price</th><th>Qty</th><th>Status</th><th>Actions</th>
-                </tr>
-                <?php foreach($products as $p): ?>
-                <tr>
-                    <td>
-                        <?php if($p['Image_Path'] && file_exists('../uploads/products/'.$p['Image_Path'])): ?>
-                            <img src="/farm2market/uploads/products/<?= $p['Image_Path'] ?>" style="width:40px; height:40px; object-fit:cover; border:1px solid var(--border-dim);">
-                        <?php else: ?>
-                            <div style="width:40px; height:40px; background:var(--bg-hover); font-size:10px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-dim);">N/A</div>
-                        <?php endif; ?>
-                    </td>
-                    <td>P-<?= $p['Product_ID'] ?></td>
-                    <td><?= htmlspecialchars($p['Farmer']) ?></td>
-                    <td><strong><?= htmlspecialchars($p['Product_Name']) ?></strong></td>
-                    <td style="text-transform:capitalize;"><?= $p['Category'] ?></td>
-                    <td>₹<?= $p['Price'] ?></td>
-                    <td><?= $p['Quantity'] ?></td>
-                    <td><span class="badge badge-<?= $p['Status'] ?>"><?= $p['Status'] ?></span></td>
-                    <td style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-                        <?php if($p['Status'] !== 'approved'): ?>
-                        <form method="POST"><input type="hidden" name="id" value="<?= $p['Product_ID'] ?>"><input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-primary">APP</button></form>
-                        <?php endif; ?>
-                        <?php if($p['Status'] !== 'rejected'): ?>
-                        <form method="POST"><input type="hidden" name="id" value="<?= $p['Product_ID'] ?>"><input type="hidden" name="action" value="reject"><button class="btn btn-sm btn-amber">REJ</button></form>
-                        <?php endif; ?>
-                        <form method="POST" onsubmit="return confirm('Delete this product permanently?')"><input type="hidden" name="id" value="<?= $p['Product_ID'] ?>"><input type="hidden" name="action" value="delete"><button class="btn btn-sm btn-danger">DEL</button></form>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-                <?php if(empty($products)): ?>
-                    <tr><td colspan="9" class="text-center">No products found matching the criteria.</td></tr>
-                <?php endif; ?>
-            </table>
-        </div>
-    </div>
+                <thead>
+                    <tr>
+                        <th>Product Details</th>
+                        <th>Provider</th>
+                        <th>Category</th>
+                        <th>Price & Qty</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($products as $p): ?>
+                    <tr>
+                        <td>
+                            <div class="td-product">
+                                <div class="td-product-img">
+                                    <?php 
+                                        $img = $p['Image_Path'] ?? $p['Image'] ?? null;
+                                        if($img): 
+                                    ?>
+                                        <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>">
+                                    <?php else: ?>
+                                        <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.2; padding:10px;">
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="td-name"><?= htmlspecialchars($p['Product_Name']) ?></div>
+                                    <div class="td-sub">ID: P-<?= str_pad($p['Product_ID'], 5, '0', STR_PAD_LEFT) ?></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="td-user">
+                                <div class="td-avatar">
+                                    <img src="<?= avatar($p['Farmer_ID']) ?>">
+                                </div>
+                                <span class="td-name"><?= htmlspecialchars($p['Farmer']) ?></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-gap">
+                                <img src="<?= catIcon($p['Category']) ?>" style="width:14px; opacity:0.6;">
+                                <span style="text-transform: capitalize; font-size: 0.85rem;"><?= $p['Category'] ?></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="td-name">₹<?= number_format($p['Price'], 2) ?></div>
+                            <div class="td-sub"><?= $p['Quantity'] ?> Units available</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-<?= $p['Status'] ?>"><?= $o['Status'] ?? $p['Status'] ?></span>
+                        </td>
+                        <td>
+                            <div class="flex-gap gap-sm">
+                                <?php if($p['Status'] !== 'approved'): ?>
+                                    <form method="POST">
+                                        <input type="hidden" name="id" value="<?= $p['Product_ID'] ?>">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button class="btn btn-icon btn-sm btn-primary" title="Approve Listing">
+                                            <img src="<?= NI ?>ni-check.png">
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
 
+                                <?php if($p['Status'] !== 'rejected'): ?>
+                                    <form method="POST">
+                                        <input type="hidden" name="id" value="<?= $p['Product_ID'] ?>">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button class="btn btn-icon btn-sm btn-amber" title="Reject Listing">
+                                            <img src="<?= NI ?>ni-x.png">
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <form method="POST" onsubmit="return confirm('Delete this product permanently?')">
+                                    <input type="hidden" name="id" value="<?= $p['Product_ID'] ?>">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button class="btn btn-icon btn-sm btn-outline" title="Delete Permanent">
+                                        <img src="<?= NI ?>ni-trash.png">
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php include '../includes/footer.php'; ?>

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($role === 'admin') {
             $table = 'admin';
             $id_col = 'Admin_ID';
-            $status_check = false; // Admin has no status column
+            $status_check = false;
         } elseif ($role === 'farmer') {
             $table = 'farmers';
             $id_col = 'Farmer_ID';
@@ -58,52 +58,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$layout_mode = 'auth';
+require_once '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="auth-wrapper">
-    <div class="auth-card">
-        <h2 class="auth-title">SYSTEM LOGIN</h2>
-        <p class="auth-subtitle">Verify your identity to proceed.</p>
-
-        <?php if($error): ?>
-            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-
-        <div class="role-tabs">
-            <button class="role-tab" id="tab-admin" onclick="switchRole('admin')">ADMIN</button>
-            <button class="role-tab active" id="tab-farmer" onclick="switchRole('farmer')">FARMER</button>
-            <button class="role-tab" id="tab-customer" onclick="switchRole('customer')">CUSTOMER</button>
+<div class="auth-page">
+    <div class="auth-visual">
+        <div class="auth-illo">
+            <img src="<?= EC ?>ec-improve-conversion-rate.png" alt="Login Illustration">
         </div>
+        <h2 class="auth-visual-title">Welcome Back to the Source</h2>
+        <p class="auth-visual-sub">Connect to your localized trading terminal and manage your agricultural assets with elite precision.</p>
+    </div>
 
-        <form method="POST" action="">
-            <input type="hidden" name="role" id="login-role" value="farmer">
+    <div class="auth-form-side">
+        <div class="auth-box">
+            <a href="/farm2market/index.php" class="auth-brand">
+                <div class="ab-icon">
+                    <img src="<?= NI ?>ni-picking-fruit.png" alt="Icon">
+                </div>
+                <div class="ab-name">FARM2MARKET</div>
+            </a>
             
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" required placeholder="user@farm.com">
-            </div>
-            
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" required placeholder="••••••••">
+            <h1 class="auth-title">System Login</h1>
+            <p class="auth-sub">Enter your credentials to initialize session.</p>
+
+            <?php if($error): ?>
+                <div class="alert alert-error">
+                    <img src="<?= NI ?>ni-exclamation-triangle.png">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="role-tabs">
+                <button class="rtab active" onclick="switchRole('farmer', this)">
+                    <img src="<?= NI ?>ni-picking-fruit.png"> Farmer
+                </button>
+                <button class="rtab" onclick="switchRole('customer', this)">
+                    <img src="<?= NI ?>ni-house.png"> Customer
+                </button>
+                <button class="rtab" onclick="switchRole('admin', this)">
+                    <img src="<?= NI ?>ni-user-square.png"> Admin
+                </button>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width:100%">INITIALIZE SESSION</button>
-        </form>
-        
-        <div style="text-align:center; margin-top:1.5rem; font-size:0.8rem;">
-            <a href="register.php" style="color:var(--text-muted)">Need an account? Register here.</a>
+            <form method="POST" action="">
+                <input type="hidden" name="role" id="login-role" value="farmer">
+                
+                <div class="form-group">
+                    <label>Email Address <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-inbox.png" class="input-ico">
+                        <input type="email" name="email" required placeholder="name@example.com" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Password <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <img src="<?= NI ?>ni-fingerprint-id.png" class="input-ico">
+                        <input type="password" name="password" required placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">
+                    Initialize Protocol
+                    <img src="<?= NI ?>ni-arrow-right-circle.png">
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an identity? <a href="register.php">Create Account</a>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    function switchRole(role) {
-        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + role).classList.add('active');
+    function switchRole(role, btn) {
+        document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
         document.getElementById('login-role').value = role;
     }
 </script>
 
-<?php include '../includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

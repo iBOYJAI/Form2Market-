@@ -24,73 +24,111 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll();
 
-$categories = ['all','vegetables','fruits','grains','dairy','poultry','spices','herbs','other'];
+$categories = [
+    ['id' => 'all', 'label' => 'All Assets', 'icon' => 'ni-house.png'],
+    ['id' => 'vegetables', 'label' => 'Vegetables', 'icon' => 'ni-butterfly.png'],
+    ['id' => 'fruits', 'label' => 'Fruits', 'icon' => 'ni-picking-fruit.png'],
+    ['id' => 'grains', 'label' => 'Grains', 'icon' => 'ni-collection.png'],
+    ['id' => 'dairy', 'label' => 'Dairy', 'icon' => 'ni-award.png'],
+    ['id' => 'poultry', 'label' => 'Poultry', 'icon' => 'ni-butterfly.png'],
+    ['id' => 'spices', 'label' => 'Spices', 'icon' => 'ni-scissors.png'],
+    ['id' => 'herbs', 'label' => 'Herbs', 'icon' => 'ni-butterfly.png'],
+    ['id' => 'other', 'label' => 'Other', 'icon' => 'ni-shopping-cart.png'],
+];
 ?>
+
 <?php include '../includes/header.php'; ?>
 
-<div class="container">
-    <div class="section-header">
-        <div>
-            <h2>> ASSET EXCHANGE INDEX</h2>
-            <p>Browse available nodes in the network</p>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="breadcrumb">
+            <a href="dashboard.php">Customer</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Marketplace</span>
         </div>
+        <h1 class="page-title">Asset Exchange Index</h1>
+        <p class="page-subtitle">Scan and procure fresh agricultural assets directly from local production nodes.</p>
     </div>
-
-    <!-- Filters/Search -->
-    <div class="card mb-3" style="padding:1rem;">
-        <form method="GET" class="flex gap-3 align-center" style="flex-wrap:wrap;">
-            <div style="flex:1; min-width:200px;">
-                <input type="text" name="q" placeholder="SCAN ARCHIVE... (Asset or Provider Name)" value="<?= htmlspecialchars($search_query) ?>">
-            </div>
-            <div>
-                <select name="category" onchange="this.form.submit()" style="padding:0.6rem; min-width:150px;">
-                    <?php foreach($categories as $c): ?>
-                        <option value="<?= $c ?>" <?= $category_filter===$c?'selected':'' ?>><?= strtoupper($c) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary" style="padding:0.6rem 1.5rem;">EXECUTE QUERY</button>
-            <?php if(!empty($search_query) || $category_filter !== 'all'): ?>
-                <a href="browse.php" class="btn btn-danger" style="padding:0.6rem 1rem;">RESET</a>
-            <?php endif; ?>
-        </form>
+    <div class="page-actions">
+        <img src="<?= EC ?>ec-easy-shopping.png" style="width: 120px; opacity: 0.15; position: absolute; top: 1rem; right: 2rem; pointer-events: none;">
     </div>
-
-    <div class="grid-auto">
-        <?php foreach($products as $p): ?>
-        <div class="product-card">
-            <?php if($p['Image_Path'] && file_exists('../uploads/products/'.$p['Image_Path'])): ?>
-                <img src="/farm2market/uploads/products/<?= $p['Image_Path'] ?>" alt="<?= htmlspecialchars($p['Product_Name']) ?>">
-            <?php else: ?>
-                <div class="img-placeholder">NO_IMAGE_DATA</div>
-            <?php endif; ?>
-            
-            <div class="product-card-body">
-                <span class="badge" style="border:1px solid var(--green-dim); color:var(--text-secondary); width:max-content; margin-bottom:0.5rem;"><?= strtoupper($p['Category']) ?></span>
-                
-                <div class="product-name glow text-md" style="font-size:1.1rem;"><?= htmlspecialchars($p['Product_Name']) ?></div>
-                
-                <div class="flex justify-between align-center" style="margin-top:0.5rem;">
-                    <span class="product-price glow-amber" style="font-size:1.3rem;">₹<?= $p['Price'] ?></span>
-                    <span style="font-size:0.75rem; color:var(--text-muted)">Avail: <?= $p['Quantity'] ?></span>
-                </div>
-                
-                <div class="product-farmer mt-1 glow" style="color:var(--text-primary); border-top:1px dashed var(--border-dim); padding-top:0.5rem; margin-bottom:1rem;">
-                    NODE: [ <?= htmlspecialchars($p['Farmer']) ?> ]
-                </div>
-                
-                <a href="product_detail.php?id=<?= $p['Product_ID'] ?>" class="btn btn-primary text-center" style="width:100%;">REQUEST PROCUREMENT DATA</a>
-            </div>
-        </div>
-        <?php endforeach; ?>
-    </div>
-
-    <?php if(empty($products)): ?>
-        <div class="card text-center" style="padding:4rem; margin-top:1rem;">
-            <div class="glow-amber" style="font-size:2rem; margin-bottom:1rem;">ERROR 404: ASSETS NOT FOUND</div>
-            <p style="color:var(--text-muted)">No entities match your current query parameters.</p>
-        </div>
-    <?php endif; ?>
 </div>
+
+<!-- Filters Bar -->
+<div class="card mb-4" style="padding: 1rem;">
+    <form method="GET" class="flex-between align-center flex-wrap gap-4">
+        <div class="topbar-search" style="flex: 1; min-width: 300px; background: var(--bg-secondary);">
+            <img src="<?= NI ?>ni-info.png" style="opacity: 0.4;">
+            <input type="text" name="q" placeholder="Search archive (Asset or Provider Name)..." value="<?= htmlspecialchars($search_query) ?>">
+        </div>
+        
+        <div class="flex-gap">
+            <?php if(!empty($search_query) || $category_filter !== 'all'): ?>
+                <a href="browse.php" class="btn btn-ghost">Reset Filters</a>
+            <?php endif; ?>
+            <button type="submit" class="btn btn-primary">Execute Query</button>
+        </div>
+    </form>
+</div>
+
+<!-- Category Ribbon -->
+<div class="category-ribbon mb-4">
+    <?php foreach($categories as $cat): ?>
+        <a href="?category=<?= $cat['id'] ?>&q=<?= urlencode($search_query) ?>" class="cat-chip <?= $category_filter === $cat['id'] ? 'active' : '' ?>">
+            <img src="<?= NI . $cat['icon'] ?>">
+            <span><?= $cat['label'] ?></span>
+        </a>
+    <?php endforeach; ?>
+</div>
+
+<div class="g4">
+    <?php foreach($products as $p): ?>
+    <div class="card p-card">
+        <div class="p-card-img">
+            <?php 
+                $img = $p['Image_Path'] ?? $p['Image'] ?? null;
+                if($img): 
+            ?>
+                <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>">
+            <?php else: ?>
+                <div class="empty-state" style="padding: 2rem; border-radius: 0;">
+                    <img src="<?= NI ?>ni-shopping-cart.png" style="width: 50px; opacity: 0.15;">
+                </div>
+            <?php endif; ?>
+            <div class="p-card-badge">
+                <span class="badge badge-approved" style="background: var(--bg-primary); border: 1px solid var(--green-dim);"><?= strtoupper($p['Category']) ?></span>
+            </div>
+        </div>
+        <div class="card-body">
+            <h3 class="td-name" style="font-size: 1.1rem; margin-bottom: 0.25rem;"><?= htmlspecialchars($p['Product_Name']) ?></h3>
+            <div class="td-user mb-4">
+                <div class="td-avatar" style="width: 24px; height: 24px;">
+                    <img src="<?= avatar($p['Farmer_ID']) ?>">
+                </div>
+                <span class="td-sub" style="font-size: 0.75rem;">Node: <?= htmlspecialchars($p['Farmer']) ?></span>
+            </div>
+            
+            <div class="flex-between align-end mt-auto">
+                <div>
+                    <div class="td-name" style="color: var(--gold-700); font-size: 1.3rem;">₹<?= number_format($p['Price'], 2) ?></div>
+                    <div class="td-sub">Avail: <?= $p['Quantity'] ?> Units</div>
+                </div>
+                <a href="product_detail.php?id=<?= $p['Product_ID'] ?>" class="btn btn-icon btn-primary" title="Details">
+                    <img src="<?= NI ?>ni-arrow-right-circle.png">
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+
+<?php if(empty($products)): ?>
+    <div class="empty-state card" style="padding: 5rem 2rem;">
+        <img src="<?= NC ?>nc-no-answer.png" class="empty-illo">
+        <h3>Asset Not Found</h3>
+        <p>No agricultural entities match your current network query.</p>
+        <a href="browse.php" class="btn btn-outline btn-sm mt-3">Reset Scan</a>
+    </div>
+<?php endif; ?>
 
 <?php include '../includes/footer.php'; ?>

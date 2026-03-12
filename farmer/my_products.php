@@ -27,73 +27,110 @@ $sql .= " ORDER BY Created_At DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll();
+
+include '../includes/header.php';
 ?>
-<?php include '../includes/header.php'; ?>
 
-<div class="container">
-    <div class="section-header">
-        <div>
-            <h2>> ASSET INVENTORY</h2>
-            <p>Manage and Monitor Active Listings</p>
+<div class="page-header">
+    <div class="page-header-left">
+        <div class="breadcrumb">
+            <a href="dashboard.php">Farmer</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Asset Inventory</span>
         </div>
-        <a href="add_product.php" class="btn btn-primary">+ ADD PRODUCT</a>
+        <h1 class="page-title">My Farm Produce</h1>
+        <p class="page-subtitle">Manage and monitor your active listings and stock levels.</p>
     </div>
-
-    <div style="display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-        <a href="?status=all" class="btn <?= $status_filter==='all'?'btn-primary':'btn-sm' ?>" style="border:1px solid var(--border-dim)">ALL</a>
-        <a href="?status=pending" class="btn <?= $status_filter==='pending'?'btn-primary':'btn-sm' ?>" style="border:1px solid var(--border-dim)">PENDING</a>
-        <a href="?status=approved" class="btn <?= $status_filter==='approved'?'btn-primary':'btn-sm' ?>" style="border:1px solid var(--border-dim)">APPROVED</a>
-        <a href="?status=rejected" class="btn <?= $status_filter==='rejected'?'btn-primary':'btn-sm' ?>" style="border:1px solid var(--border-dim)">REJECTED</a>
-        
-        <input type="text" id="asset-search" placeholder="Search local inventory..." style="max-width:250px; margin-left:auto; padding:0.4rem;">
+    <div class="page-actions">
+        <a href="add_product.php" class="btn btn-primary">
+            <img src="<?= NI ?>ni-plus.png"> Add New Product
+        </a>
+        <img src="<?= EC ?>ec-taking-note.png" style="width: 100px; opacity: 0.15; position: absolute; top: 1rem; right: 2rem; pointer-events: none;">
     </div>
+</div>
 
-    <div class="grid-auto">
-        <?php foreach($products as $p): ?>
-        <div class="product-card f-card">
-            <?php if($p['Image_Path'] && file_exists('../uploads/products/'.$p['Image_Path'])): ?>
-                <img src="/farm2market/uploads/products/<?= $p['Image_Path'] ?>" alt="<?= htmlspecialchars($p['Product_Name']) ?>">
+<div class="filter-tabs mb-4">
+    <a href="?status=all" class="ftab <?= $status_filter === 'all' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-house.png"> All Items
+    </a>
+    <a href="?status=approved" class="ftab <?= $status_filter === 'approved' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-check.png"> Approved
+    </a>
+    <a href="?status=pending" class="ftab <?= $status_filter === 'pending' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-exclamation-triangle.png"> Pending
+    </a>
+    <a href="?status=rejected" class="ftab <?= $status_filter === 'rejected' ? 'active' : '' ?>">
+        <img src="<?= NI ?>ni-x.png"> Rejected
+    </a>
+    
+    <div class="topbar-search" style="margin-left: auto; width: 250px; background: var(--bg-card);">
+        <img src="<?= NI ?>ni-info.png" style="opacity: 0.4;">
+        <input type="text" id="asset-search" placeholder="Search inventory...">
+    </div>
+</div>
+
+<div class="g3">
+    <?php foreach($products as $p): ?>
+    <div class="card p-card f-card">
+        <div class="p-card-img">
+            <?php 
+                $img = $p['Image_Path'] ?? $p['Image'] ?? null;
+                if($img): 
+            ?>
+                <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>" class="search-target-img">
             <?php else: ?>
-                <div class="img-placeholder">NO_IMAGE_DATA</div>
-            <?php endif; ?>
-            
-            <div class="product-card-body">
-                <div class="flex justify-between align-center mb-1">
-                    <span class="badge" style="border:1px solid var(--green-dim); color:var(--text-secondary)"><?= strtoupper($p['Category']) ?></span>
-                    <span class="badge badge-<?= $p['Status'] ?>"><?= $p['Status'] ?></span>
+                <div class="empty-state" style="padding: 1rem; border-radius: 0;">
+                    <img src="<?= NI ?>ni-shopping-cart.png" style="width: 40px; opacity: 0.2;">
                 </div>
-                <div class="product-name search-target"><?= htmlspecialchars($p['Product_Name']) ?></div>
-                <div class="product-price">₹<?= $p['Price'] ?> <span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">/ unit</span></div>
-                <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:1rem;">Stock: <?= $p['Quantity'] ?></div>
-                
-                <div class="flex gap-2" style="margin-top:auto;">
-                    <a href="edit_product.php?id=<?= $p['Product_ID'] ?>" class="btn btn-sm" style="flex:1; text-align:center; border:1px solid var(--amber-dim); color:var(--amber);">EDIT</a>
-                    <form method="POST" style="flex:1; display:flex;" onsubmit="return confirm('Purge this asset from the database?')">
+            <?php endif; ?>
+            <div class="p-card-badge">
+                <span class="badge badge-<?= $p['Status'] ?>"><?= $p['Status'] ?></span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="flex-gap mb-1">
+                <img src="<?= catIcon($p['Category']) ?>" style="width: 14px; opacity: 0.6;">
+                <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);"><?= $p['Category'] ?></span>
+            </div>
+            <h3 class="td-name search-target-name"><?= htmlspecialchars($p['Product_Name']) ?></h3>
+            <div class="flex-between align-end mt-2">
+                <div>
+                    <div class="td-name" style="color: var(--green-700); font-size: 1.1rem;">₹<?= number_format($p['Price'], 2) ?></div>
+                    <div class="td-sub">Stock: <?= $p['Quantity'] ?> Units</div>
+                </div>
+                <div class="flex-gap gap-sm">
+                    <a href="edit_product.php?id=<?= $p['Product_ID'] ?>" class="btn btn-icon btn-sm btn-outline" title="Edit Listing">
+                        <img src="<?= NI ?>ni-edit.png">
+                    </a>
+                    <form method="POST" onsubmit="return confirm('Purge this asset from the database?')">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?= $p['Product_ID'] ?>">
-                        <button type="submit" class="btn btn-sm btn-danger" style="width:100%;">DELETE</button>
+                        <button type="submit" class="btn btn-icon btn-sm btn-outline" style="border-color: var(--red-200);" title="Delete Permanent">
+                            <img src="<?= NI ?>ni-trash.png">
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
-        <?php endforeach; ?>
     </div>
-
-    <?php if(empty($products)): ?>
-        <div class="card text-center" style="padding:4rem; color:var(--text-muted);">
-            No inventory found matching criteria.<br>
-            [ EOF ]
-        </div>
-    <?php endif; ?>
-
+    <?php endforeach; ?>
 </div>
 
+<?php if(empty($products)): ?>
+    <div class="empty-state card" style="padding: 5rem 2rem;">
+        <img src="<?= NC ?>nc-no-answer.png" class="empty-illo">
+        <h3>No Assets Found</h3>
+        <p>Your local agricultural registry is currently initialized with zero listings.</p>
+        <a href="add_product.php" class="btn btn-primary mt-3">List New Product</a>
+    </div>
+<?php endif; ?>
+
 <script>
-    document.getElementById('asset-search').addEventListener('input', function(e) {
-        const query = e.target.value.toLowerCase();
+    document.getElementById('asset-search')?.addEventListener('input', function(e) {
+        const q = e.target.value.toLowerCase();
         document.querySelectorAll('.f-card').forEach(card => {
-            const txt = card.querySelector('.search-target').textContent.toLowerCase();
-            card.style.display = txt.includes(query) ? 'flex' : 'none';
+            const name = card.querySelector('.search-target-name').textContent.toLowerCase();
+            card.style.display = name.includes(q) ? '' : 'none';
         });
     });
 </script>
