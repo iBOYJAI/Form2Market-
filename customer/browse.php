@@ -89,7 +89,7 @@ $categories = [
                 $img = $p['Image_Path'] ?? $p['Image'] ?? null;
                 if($img): 
             ?>
-                <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>">
+                <img src="<?= htmlspecialchars(productImageSrc($img)) ?>">
             <?php else: ?>
                 <div class="empty-state" style="padding: 2rem; border-radius: 0;">
                     <img src="<?= NI ?>ni-shopping-cart.png" style="width: 50px; opacity: 0.15;">
@@ -110,7 +110,7 @@ $categories = [
             
             <div class="flex-between align-end mt-auto">
                 <div>
-                    <div class="td-name" style="color: var(--gold-700); font-size: 1.3rem;">₹<?= number_format($p['Price'], 2) ?></div>
+                    <div class="td-name" style="color: var(--gold-700); font-size: 1.3rem;"><?= CURRENCY ?><?= number_format($p['Price'], 2) ?></div>
                     <div class="td-sub">Avail: <?= $p['Quantity'] ?> Units</div>
                 </div>
                 <a href="product_detail.php?id=<?= $p['Product_ID'] ?>" class="btn btn-icon btn-primary" title="Details">

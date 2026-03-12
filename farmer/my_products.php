@@ -77,7 +77,7 @@ include '../includes/header.php';
                 $img = $p['Image_Path'] ?? $p['Image'] ?? null;
                 if($img): 
             ?>
-                <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>" class="search-target-img">
+                <img src="<?= htmlspecialchars(productImageSrc($img)) ?>" class="search-target-img">
             <?php else: ?>
                 <div class="empty-state" style="padding: 1rem; border-radius: 0;">
                     <img src="<?= NI ?>ni-shopping-cart.png" style="width: 40px; opacity: 0.2;">
@@ -95,7 +95,7 @@ include '../includes/header.php';
             <h3 class="td-name search-target-name"><?= htmlspecialchars($p['Product_Name']) ?></h3>
             <div class="flex-between align-end mt-2">
                 <div>
-                    <div class="td-name" style="color: var(--green-700); font-size: 1.1rem;">₹<?= number_format($p['Price'], 2) ?></div>
+                    <div class="td-name" style="color: var(--green-700); font-size: 1.1rem;"><?= CURRENCY ?><?= number_format($p['Price'], 2) ?></div>
                     <div class="td-sub">Stock: <?= $p['Quantity'] ?> Units</div>
                 </div>
                 <div class="flex-gap gap-sm">

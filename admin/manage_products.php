@@ -96,7 +96,7 @@ include '../includes/header.php';
                                         $img = $p['Image_Path'] ?? $p['Image'] ?? null;
                                         if($img): 
                                     ?>
-                                        <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>">
+                                        <img src="<?= htmlspecialchars(productImageSrc($img)) ?>">
                                     <?php else: ?>
                                         <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.2; padding:10px;">
                                     <?php endif; ?>
@@ -122,7 +122,7 @@ include '../includes/header.php';
                             </div>
                         </td>
                         <td>
-                            <div class="td-name">₹<?= number_format($p['Price'], 2) ?></div>
+                            <div class="td-name"><?= CURRENCY ?><?= number_format($p['Price'], 2) ?></div>
                             <div class="td-sub"><?= $p['Quantity'] ?> Units available</div>
                         </td>
                         <td>

@@ -24,7 +24,7 @@ $recent_orders = $pdo->query("
 
 // Pending Products
 $pending = $pdo->query("
-    SELECT p.Product_ID, p.Product_Name, p.Price, f.Name as Farmer, p.Image 
+    SELECT p.Product_ID, p.Product_Name, p.Price, f.Name as Farmer, p.Image_Path
     FROM products p 
     JOIN farmers f ON p.Farmer_ID = f.Farmer_ID 
     WHERE p.Status = 'pending' LIMIT 5
@@ -113,7 +113,7 @@ include '../includes/header.php';
             <img src="<?= NC ?>nc-gauge-price-sensitivity.png">
         </div>
         <div class="stat-info">
-            <div class="stat-val">₹<?= number_format($stats['revenue'] / 1000, 1) ?>k</div>
+            <div class="stat-val"><?= CURRENCY ?><?= number_format($stats['revenue'] / 1000, 1) ?>k</div>
             <div class="stat-lbl">Revenue</div>
         </div>
     </div>
@@ -149,8 +149,8 @@ include '../includes/header.php';
                             <td>
                                 <div class="td-product">
                                     <div class="td-product-img">
-                                        <?php if($p['Image']): ?>
-                                            <img src="/farm2market/uploads/products/<?= $p['Image'] ?>">
+                                        <?php if($p['Image_Path']): ?>
+                                            <img src="<?= htmlspecialchars(productImageSrc($p['Image_Path'])) ?>">
                                         <?php else: ?>
                                             <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.3; padding:10px;">
                                         <?php endif; ?>
@@ -159,7 +159,7 @@ include '../includes/header.php';
                                 </div>
                             </td>
                             <td><?= htmlspecialchars($p['Farmer']) ?></td>
-                            <td class="td-name">₹<?= $p['Price'] ?></td>
+                            <td class="td-name"><?= CURRENCY ?><?= $p['Price'] ?></td>
                             <td>
                                 <div class="flex-gap gap-sm">
                                     <a href="?action=approve&product_id=<?= $p['Product_ID'] ?>" class="btn btn-primary btn-icon btn-sm" title="Approve">
@@ -226,7 +226,7 @@ include '../includes/header.php';
                         </div>
                     </td>
                     <td><?= htmlspecialchars($o['Product']) ?></td>
-                    <td class="td-name">₹<?= number_format($o['Total_Amount'], 2) ?></td>
+                    <td class="td-name"><?= CURRENCY ?><?= number_format($o['Total_Amount'], 2) ?></td>
                     <td>
                         <div class="flex-gap">
                             <?php 

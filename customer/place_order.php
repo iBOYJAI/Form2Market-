@@ -114,11 +114,11 @@ include '../includes/header.php';
             </div>
             <div class="flex-between mb-3 pb-3" style="border-bottom: 1px dashed var(--border-dim);">
                 <span class="td-sub">Telemetry (Qty):</span>
-                <span class="td-name"><?= $request_qty ?> x ₹<?= number_format($product['Price'], 2) ?></span>
+                <span class="td-name"><?= $request_qty ?> x <?= CURRENCY ?><?= number_format($product['Price'], 2) ?></span>
             </div>
             <div class="flex-between">
                 <span class="td-name" style="color: var(--green-800);">TOTAL EXPENDITURE:</span>
-                <span class="td-name" style="font-size: 1.8rem; color: var(--gold-700);">₹<?= number_format($total_amount, 2) ?></span>
+                <span class="td-name" style="font-size: 1.8rem; color: var(--gold-700);"><?= CURRENCY ?><?= number_format($total_amount, 2) ?></span>
             </div>
         </div>
 

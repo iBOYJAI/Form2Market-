@@ -1,0 +1,4 @@
+AddType text/css .css
+<FilesMatch "\.css$">
+  header set Content-Type "text/css"
+</FilesMatch>

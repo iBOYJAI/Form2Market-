@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['name'] = $name;
                 $_SESSION['email'] = $email;
 
-                if ($role === 'farmer') header('Location: /farm2market/farmer/dashboard.php');
-                else header('Location: /farm2market/customer/dashboard.php');
+                if ($role === 'farmer') header('Location: ' . BASE_URL . 'farmer/dashboard.php');
+                else header('Location: ' . BASE_URL . 'customer/dashboard.php');
                 exit();
             }
         } catch(PDOException $e) {
@@ -63,7 +63,7 @@ require_once '../includes/header.php';
 
     <div class="auth-form-side">
         <div class="auth-box" style="max-width: 500px;">
-            <a href="/farm2market/index.php" class="auth-brand">
+            <a href="<?= BASE_URL ?>index.php" class="auth-brand">
                 <div class="ab-icon">
                     <img src="<?= NI ?>ni-picking-fruit.png" alt="Icon">
                 </div>

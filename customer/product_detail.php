@@ -43,7 +43,7 @@ include '../includes/header.php';
             $img = $product['Image_Path'] ?? $product['Image'] ?? null;
             if($img): 
         ?>
-            <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= htmlspecialchars(productImageSrc($img)) ?>" style="width: 100%; height: 100%; object-fit: cover;">
         <?php else: ?>
             <div class="empty-state" style="height: 100%; border-radius: 0;">
                 <img src="<?= NI ?>ni-shopping-cart.png" style="width: 80px; opacity: 0.1;">
@@ -70,7 +70,7 @@ include '../includes/header.php';
 
             <h2 class="td-name" style="font-size: 2.2rem; margin-bottom: 0.5rem;"><?= htmlspecialchars($product['Product_Name']) ?></h2>
             <div class="mb-4">
-                <span class="td-name" style="font-size: 2.5rem; color: var(--gold-700);">₹<?= number_format($product['Price'], 2) ?></span>
+                <span class="td-name" style="font-size: 2.5rem; color: var(--gold-700);"><?= CURRENCY ?><?= number_format($product['Price'], 2) ?></span>
                 <span class="td-sub" style="font-size: 1rem;">/ per unit</span>
             </div>
 
@@ -116,8 +116,4 @@ include '../includes/header.php';
     </div>
 </div>
 
-<?php include '../includes/header.php'; ?>
-<style>
-.spec-card { border: 1px solid var(--border-dim); padding: 1rem; border-radius: 12px; }
-</style>
 <?php include '../includes/footer.php'; ?>

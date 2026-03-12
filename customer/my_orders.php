@@ -116,14 +116,14 @@ include '../includes/header.php';
             <div class="flex-gap mb-4">
                 <div class="td-product-img" style="width: 50px; height: 50px; border-radius: 8px;">
                     <?php if($o['Image_Path']): ?>
-                        <img src="/farm2market/uploads/products/<?= htmlspecialchars($o['Image_Path']) ?>">
+                        <img src="<?= htmlspecialchars(productImageSrc($o['Image_Path'])) ?>">
                     <?php else: ?>
                         <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.2; padding:10px;">
                     <?php endif; ?>
                 </div>
                 <div>
                     <h3 class="td-name" style="font-size: 1.1rem; color: var(--green-800);"><?= htmlspecialchars($o['Product_Name']) ?></h3>
-                    <div class="td-sub">Quantity: <?= $o['Quantity'] ?> Units • Total: <span class="td-name" style="color: var(--gold-700);">₹<?= number_format($o['Total_Amount'], 2) ?></span></div>
+                    <div class="td-sub">Quantity: <?= $o['Quantity'] ?> Units • Total: <span class="td-name" style="color: var(--gold-700);"><?= CURRENCY ?><?= number_format($o['Total_Amount'], 2) ?></span></div>
                 </div>
             </div>
 

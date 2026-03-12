@@ -62,7 +62,7 @@ include '../includes/header.php';
             <img src="<?= NC ?>nc-gauge-price-sensitivity.png">
         </div>
         <div class="stat-info">
-            <div class="stat-val">₹<?= number_format($stats['spent'], 2) ?></div>
+            <div class="stat-val"><?= CURRENCY ?><?= number_format($stats['spent'], 2) ?></div>
             <div class="stat-lbl">Total Expenditure</div>
         </div>
     </div>
@@ -113,7 +113,7 @@ include '../includes/header.php';
                                 </div>
                             </td>
                             <td><?= htmlspecialchars($o['Product_Name']) ?> x<?= $o['Quantity'] ?></td>
-                            <td class="td-name">₹<?= number_format($o['Total_Amount'], 2) ?></td>
+                            <td class="td-name"><?= CURRENCY ?><?= number_format($o['Total_Amount'], 2) ?></td>
                             <td>
                                 <span class="badge badge-<?= $o['Status'] ?>"><?= $o['Status'] ?></span>
                             </td>
@@ -140,7 +140,7 @@ include '../includes/header.php';
                             $img = $p['Image_Path'] ?? $p['Image'] ?? null;
                             if($img): 
                         ?>
-                            <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>">
+                            <img src="<?= htmlspecialchars(productImageSrc($img)) ?>">
                         <?php else: ?>
                             <img src="<?= NI ?>ni-shopping-cart.png" style="opacity:0.2; padding:15px;">
                         <?php endif; ?>
@@ -149,7 +149,7 @@ include '../includes/header.php';
                         <div class="td-name"><?= htmlspecialchars($p['Product_Name']) ?></div>
                         <div class="flex-between align-center mt-1">
                             <span class="td-sub" style="font-size: 0.65rem;"><?= htmlspecialchars($p['Farmer']) ?></span>
-                            <span class="td-name" style="color:var(--green-600)">₹<?= $p['Price'] ?></span>
+                            <span class="td-name" style="color:var(--green-600)"><?= CURRENCY ?><?= $p['Price'] ?></span>
                         </div>
                     </div>
                 </a>

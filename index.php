@@ -1,5 +1,20 @@
 <?php
 $layout_mode = 'landing';
+$featured = [];
+try {
+    require_once __DIR__ . '/db.php';
+    $stmt = $pdo->query("
+        SELECT p.Product_ID, p.Product_Name, p.Category, p.Price, p.Quantity, p.Image_Path, f.Name AS Farmer
+        FROM products p
+        JOIN farmers f ON p.Farmer_ID = f.Farmer_ID
+        WHERE p.Status='approved' AND p.Quantity > 0
+        ORDER BY p.Created_At DESC
+        LIMIT 8
+    ");
+    $featured = $stmt->fetchAll();
+} catch (Throwable $e) {
+    $featured = [];
+}
 require_once 'includes/header.php';
 ?>
 
@@ -20,7 +35,7 @@ require_once 'includes/header.php';
                     The ultimate P2P agricultural bridge. We connect local farmers directly with consumers, ensuring fair prices, zero middlemen, and peak quality produce.
                 </p>
                 <div class="hero-btns">
-                    <a href="/farm2market/auth/register.php" class="btn btn-primary btn-lg">Get Started Now</a>
+                    <a href="<?= BASE_URL ?>auth/register.php" class="btn btn-primary btn-lg">Get Started Now</a>
                     <a href="#how-it-works" class="btn btn-outline btn-lg">How it Works</a>
                 </div>
                 <div class="hero-stats">
@@ -41,6 +56,63 @@ require_once 'includes/header.php';
             <div class="hero-illo">
                 <img src="<?= EC ?>ec-easy-shopping.png" alt="Hero Illustration">
             </div>
+        </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="how-it-works" id="featured" style="padding-top: 3rem;">
+        <div class="how-inner">
+            <div class="flex-between align-center mb-4" style="flex-wrap: wrap;">
+                <div>
+                    <span class="section-tag">Marketplace</span>
+                    <h2 class="section-title">Featured Local Produce</h2>
+                    <p class="section-sub">Fresh picks from Tamil Nadu farms, updated from live inventory.</p>
+                </div>
+                <div class="hero-btns">
+                    <a class="btn btn-outline btn-lg" href="<?= BASE_URL ?>auth/login.php">Browse all products</a>
+                </div>
+            </div>
+
+            <?php if(empty($featured)): ?>
+                <div class="empty-state card" style="padding: 3rem 2rem;">
+                    <img src="<?= NC ?>nc-no-answer.png" class="empty-illo">
+                    <h3>No products yet</h3>
+                    <p>Run the seeder and approve listings to see products here.</p>
+                </div>
+            <?php else: ?>
+                <div class="product-grid">
+                    <?php foreach($featured as $p): ?>
+                        <a class="product-card" href="<?= BASE_URL ?>auth/login.php" title="Login to view details">
+                            <div class="product-img-wrap">
+                                <?php if(!empty($p['Image_Path'])): ?>
+                                    <img class="product-img" src="<?= htmlspecialchars(productImageSrc($p['Image_Path'])) ?>" alt="<?= htmlspecialchars($p['Product_Name']) ?>">
+                                <?php else: ?>
+                                    <div class="product-placeholder">
+                                        <img src="<?= NI ?>ni-shopping-cart.png" alt="No image">
+                                    </div>
+                                <?php endif; ?>
+                                <div class="product-status-chip">
+                                    <span class="badge badge-approved" style="background: rgba(255,255,255,0.88); border: 1px solid var(--border-light); color: var(--green-700);">
+                                        <?= strtoupper($p['Category']) ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <div class="product-cat"><?= htmlspecialchars($p['Category']) ?></div>
+                                <div class="product-name"><?= htmlspecialchars($p['Product_Name']) ?></div>
+                                <div class="product-farmer">
+                                    <img src="<?= NI ?>ni-users.png" alt="">
+                                    <span><?= htmlspecialchars($p['Farmer']) ?></span>
+                                </div>
+                                <div class="product-foot">
+                                    <div class="product-price"><?= CURRENCY ?><?= number_format((float)$p['Price'], 2) ?><span class="product-unit"> / unit</span></div>
+                                    <span class="td-sub"><?= (int)$p['Quantity'] ?> in stock</span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -88,24 +160,24 @@ require_once 'includes/header.php';
     <!-- ROLES -->
     <section class="roles-section">
         <div class="roles-inner">
-            <div style="text-align: center; margin-bottom: 2Color; 5rem">
+            <div style="text-align: center; margin-bottom: 2.5rem">
                 <span class="section-tag">Choose Your Path</span>
                 <h2 class="section-title">Tailored Experiences</h2>
             </div>
             <div class="roles-grid">
-                <a href="/farm2market/auth/login.php" class="role-card">
+                <a href="<?= BASE_URL ?>auth/login.php" class="role-card">
                     <div class="role-illo"><img src="<?= OC ?>oc-target.png"></div>
                     <h3 class="role-name">Administrator</h3>
                     <p class="role-desc">Manage network integrity, verify product listings, and generate marketplace reports.</p>
                     <span class="btn btn-outline btn-block">Access Console</span>
                 </a>
-                <a href="/farm2market/auth/login.php" class="role-card">
+                <a href="<?= BASE_URL ?>auth/login.php" class="role-card">
                     <div class="role-illo"><img src="<?= OC ?>oc-on-the-laptop.png"></div>
                     <h3 class="role-name">Farmer</h3>
                     <p class="role-desc">Showcase your produce, manage your inventory, and fulfill direct customer orders.</p>
                     <span class="btn btn-outline btn-block">Grow Your Business</span>
                 </a>
-                <a href="/farm2market/auth/login.php" class="role-card">
+                <a href="<?= BASE_URL ?>auth/login.php" class="role-card">
                     <div class="role-illo"><img src="<?= NC ?>nc-woman-typing-on-machine.png"></div>
                     <h3 class="role-name">Customer</h3>
                     <p class="role-desc">Discover the freshest local produce and support your local farming community.</p>
@@ -154,9 +226,23 @@ require_once 'includes/header.php';
                     <p class="footer-motto">Elite Offline P2P Trade Protocol</p>
                 </div>
                 <div class="hero-btns">
-                    <a href="#" class="btn btn-ghost">About</a>
-                    <a href="#" class="btn btn-ghost">Terms</a>
-                    <a href="/farm2market/setup/install.php" class="btn btn-ghost">System Install</a>
+                    <a href="#about" class="btn btn-ghost">About</a>
+                    <a href="#terms" class="btn btn-ghost">Terms</a>
+                    <a href="<?= BASE_URL ?>setup/install.php" class="btn btn-ghost">System Install</a>
+                </div>
+            </div>
+            <div class="g2 mt-4">
+                <div class="consumer-box" id="about">
+                    <div class="card-head-title" style="margin-bottom:0.35rem;">About</div>
+                    <div class="td-sub">
+                        Farm2Market connects Tamil Nadu farmers directly with local buyers—transparent pricing, zero middlemen, and faster freshness.
+                    </div>
+                </div>
+                <div class="consumer-box" id="terms">
+                    <div class="card-head-title" style="margin-bottom:0.35rem;">Terms</div>
+                    <div class="td-sub">
+                        Listings and orders are processed within the local network. Users are responsible for accurate contact and delivery details.
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">

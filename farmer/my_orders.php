@@ -94,7 +94,7 @@ include '../includes/header.php';
         <div class="card-body">
             <div class="mb-4">
                 <h3 class="td-name" style="font-size: 1.1rem; color: var(--green-800);"><?= htmlspecialchars($o['Product_Name']) ?></h3>
-                <div class="td-sub" style="font-size: 0.9rem;">Qty: <?= $o['Quantity'] ?> Units • Total: <span class="td-name" style="color: var(--gold-700);">₹<?= number_format($o['Total_Amount'], 2) ?></span></div>
+                <div class="td-sub" style="font-size: 0.9rem;">Qty: <?= $o['Quantity'] ?> Units • Total: <span class="td-name" style="color: var(--gold-700);"><?= CURRENCY ?><?= number_format($o['Total_Amount'], 2) ?></span></div>
             </div>
 
             <div class="consumer-box">

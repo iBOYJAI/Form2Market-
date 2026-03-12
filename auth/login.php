@@ -45,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['name'] = $user['Name'];
                     $_SESSION['email'] = $user['Email'];
 
-                    if ($role === 'admin') header('Location: /farm2market/admin/dashboard.php');
-                    elseif ($role === 'farmer') header('Location: /farm2market/farmer/dashboard.php');
-                    else header('Location: /farm2market/customer/dashboard.php');
+                    if ($role === 'admin') header('Location: ' . BASE_URL . 'admin/dashboard.php');
+                    elseif ($role === 'farmer') header('Location: ' . BASE_URL . 'farmer/dashboard.php');
+                    else header('Location: ' . BASE_URL . 'customer/dashboard.php');
                     exit();
                 }
             } else {
@@ -74,7 +74,7 @@ require_once '../includes/header.php';
 
     <div class="auth-form-side">
         <div class="auth-box">
-            <a href="/farm2market/index.php" class="auth-brand">
+            <a href="<?= BASE_URL ?>index.php" class="auth-brand">
                 <div class="ab-icon">
                     <img src="<?= NI ?>ni-picking-fruit.png" alt="Icon">
                 </div>
@@ -92,13 +92,13 @@ require_once '../includes/header.php';
             <?php endif; ?>
 
             <div class="role-tabs">
-                <button class="rtab active" onclick="switchRole('farmer', this)">
+                <button type="button" class="rtab active" data-role="farmer" onclick="switchRole('farmer', this)">
                     <img src="<?= NI ?>ni-picking-fruit.png"> Farmer
                 </button>
-                <button class="rtab" onclick="switchRole('customer', this)">
+                <button type="button" class="rtab" data-role="customer" onclick="switchRole('customer', this)">
                     <img src="<?= NI ?>ni-house.png"> Customer
                 </button>
-                <button class="rtab" onclick="switchRole('admin', this)">
+                <button type="button" class="rtab" data-role="admin" onclick="switchRole('admin', this)">
                     <img src="<?= NI ?>ni-user-square.png"> Admin
                 </button>
             </div>
@@ -131,6 +131,22 @@ require_once '../includes/header.php';
             <div class="auth-footer">
                 Don't have an identity? <a href="register.php">Create Account</a>
             </div>
+
+            <!-- Quick Entry Nodes -->
+            <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed var(--border-light);">
+                <p class="auth-sub" style="text-align: center; margin-bottom: 1rem; font-weight: 700; color: var(--green-800);">QUICK ENTRY NODES (DEV)</p>
+                <div class="g3" style="gap: 0.5rem;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('admin@farm2market.com', 'admin123', 'admin')">
+                        Admin
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('anbarasu@farm.com', 'password123', 'farmer')">
+                        Farmer
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('karthik@buyer.com', 'password123', 'customer')">
+                        Buyer
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -140,6 +156,21 @@ require_once '../includes/header.php';
         document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('login-role').value = role;
+    }
+
+    function quickLogin(email, pass, role) {
+        const tab = document.querySelector(`.rtab[data-role="${role}"]`);
+        if (tab) switchRole(role, tab);
+        
+        document.querySelector('input[name="email"]').value = email;
+        document.querySelector('input[name="password"]').value = pass;
+        
+        const btn = document.querySelector('button[type="submit"]');
+        btn.innerText = 'Initializing...';
+        
+        setTimeout(() => {
+            document.querySelector('form').submit();
+        }, 600);
     }
 </script>
 

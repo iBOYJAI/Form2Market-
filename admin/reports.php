@@ -74,7 +74,7 @@ include '../includes/header.php';
             <img src="<?= NC ?>nc-gauge-price-sensitivity.png">
         </div>
         <div class="stat-info">
-            <div class="stat-val">₹<?= number_format($total_rev, 0) ?></div>
+            <div class="stat-val"><?= CURRENCY ?><?= number_format($total_rev, 0) ?></div>
             <div class="stat-lbl">Lifetime Revenue</div>
         </div>
     </div>
@@ -131,7 +131,7 @@ include '../includes/header.php';
                                 <span class="badge badge-approved" style="background: rgba(21, 128, 61, 0.1); color: #15803d; border: none;">+<?= rand(2, 10) ?>%</span>
                             </div>
                         </td>
-                        <td class="td-name">₹<?= number_format($s['TotalRev'] ?? 0, 2) ?></td>
+                        <td class="td-name"><?= CURRENCY ?><?= number_format($s['TotalRev'] ?? 0, 2) ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

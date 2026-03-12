@@ -115,7 +115,7 @@ include '../includes/header.php';
                         </td>
                         <td>
                             <div class="td-name"><?= htmlspecialchars($o['Product_Name']) ?></div>
-                            <div class="td-sub"><?= $o['Quantity'] ?> Units • ₹<?= number_format($o['Total_Amount'], 2) ?></div>
+                            <div class="td-sub"><?= $o['Quantity'] ?> Units • <?= CURRENCY ?><?= number_format($o['Total_Amount'], 2) ?></div>
                         </td>
                         <td>
                             <div class="flex-gap">

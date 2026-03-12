@@ -3,7 +3,7 @@
 </div>
 <?php endif; ?>
 
-<script src="/farm2market/assets/js/main.js"></script>
+<script src="<?= BASE_URL ?>assets/js/main.js"></script>
 <?php if ($layout_mode === 'dashboard'): ?>
 <script>
 // Toggle notification panel

@@ -132,7 +132,7 @@ include '../includes/header.php';
 
             <div class="g2">
                 <div class="form-group">
-                    <label>Price (₹ per unit) <span class="req">*</span></label>
+                    <label>Price (<?= CURRENCY ?> per unit) <span class="req">*</span></label>
                     <div class="input-wrap">
                         <img src="<?= NI ?>ni-coins.png" class="input-ico">
                         <input type="number" step="0.01" name="price" required min="1" placeholder="0.00" value="<?= $product['Price'] ?>">
@@ -163,7 +163,7 @@ include '../includes/header.php';
                         if($img): 
                     ?>
                         <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-dim); flex-shrink: 0;">
-                            <img src="/farm2market/uploads/products/<?= htmlspecialchars($img) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="<?= htmlspecialchars(productImageSrc($img)) ?>" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                     <?php endif; ?>
                     <div class="input-wrap" style="flex: 1;">
