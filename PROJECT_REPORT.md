@@ -60,3 +60,28 @@ The proposed system, **Form2Market**, is a digital bridge that connects farmers 
 *   **Offline Resilience**: The system works 100% without internet, making it reliable for rural deployment.
 *   **Organized Management**: Farmers can track their product listings and buyer inquiries digitally.
 *   **Moderated Environment**: The Admin dashboard ensures that the platform remains secure and only appropriate listings are displayed.
+
+---
+
+## 3. SYSTEM REQUIREMENTS
+
+### 3.1 HARDWARE REQUIREMENTS
+
+The system is designed to run on standard, modern computing hardware. Since it is an offline-first local deployment, the following hardware is recommended for the host machine (Server):
+
+*   **Processor**: Intel Core i3 or equivalent (minimum); Intel Core i5 or higher (recommended for better performance).
+*   **RAM**: 4 GB (minimum); 8 GB or higher (recommended).
+*   **Hard Disk**: 500 MB of available space for application files and local database storage.
+*   **Network Interface**: Wi-Fi adapter or Ethernet port (for hosting the marketplace over a local network/LAN).
+*   **Client Devices**: Any device with a modern web browser (Laptop, Desktop, or Smartphone) connected to the same local network.
+
+### 3.2 SOFTWARE REQUIREMENTS
+
+The platform relies on a specific software stack to ensure reliable offline operations:
+
+*   **Operating System**: Windows 10 or Windows 11 (64-bit recommended).
+*   **Database Server**: XAMPP Control Panel (specifically MySQL/MariaDB service).
+*   **Backend Environment**: Node.js (Version 16.x or higher).
+*   **Package Manager**: npm (Node Package Manager) for dependency management.
+*   **Web Browser**: Google Chrome, Mozilla Firefox, or Microsoft Edge (Latest versions recommended for React compatibility).
+*   **Development Tools**: Visual Studio Code (for any code modifications or local configuration).
