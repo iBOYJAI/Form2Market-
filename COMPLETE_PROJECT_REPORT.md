@@ -171,12 +171,7 @@ flowchart TB
 ### 3.2 Entity Relationship Diagram (Page 09)
 
 #### Main Entities
-- **admin**
-- **farmers**
-- **customers**
-- **products**
-- **orders**
-- **reports** (optional storage for generated reports; exports are generated dynamically in UI)
+The main entities used in the Farm2Market database are administrator records, farmer records, customer records, product listings, procurement orders, and optional report records. These entities are connected through foreign keys so that products are associated with farmers, orders are associated with customers and products, and fulfilment responsibility is associated with the farmer who owns the product.
 
 ```mermaid
 erDiagram
@@ -254,137 +249,156 @@ erDiagram
 ---
 
 ### 3.3 File Specifications (Page 10)
+The database schema consists of several interconnected tables that ensure detailed record keeping and referential integrity for the Farm2Market marketplace system. Each table is designed with specific primary and foreign keys to maintain a normalized data structure. Along with the database, the project follows a modular PHP file structure where each role has its own directory and each functional area is implemented as a separate page file.
 
-#### Root files
-- **`index.php`**: Landing page; shows featured approved products; prompts login/register.
-- **`db.php`**: PDO connection to MySQL `farm2market_db`; defines `BASE_URL`, asset constants, and helpers (`avatar()`, `catIcon()`, `productImageSrc()`).
-- **`seed_data.php`**: Seeder runner (creates demo admin/farmers/customers/products if missing).
-- **`COMPLETE_PROJECT_REPORT.md`**: This report.
+#### Table Name: `admin`
+Purpose: Stores authentication data for system administrators who manage users, product approvals, orders, and reports.
 
-#### `auth/`
-- **`auth/login.php`**: Role-based login (admin/farmer/customer); checks blocked status for farmer/customer; redirects to role dashboard.
-- **`auth/register.php`**: Registration for farmer/customer; stores hashed password and starts session.
-- **`auth/logout.php`**: Ends session and redirects.
+| Field name | Data type | Size | Constraints | Description |
+|---|---|---:|---|---|
+| Admin_ID | INT | 11 | Primary Key, Auto Increment | Unique administrator identifier |
+| Name | VARCHAR | 100 | Not Null | Administrator name |
+| Email | VARCHAR | 191 | Unique, Not Null | Login email address |
+| Password | VARCHAR | 255 | Not Null | Hashed password |
+| Created_At | TIMESTAMP | - | Default Current Timestamp | Record creation time |
 
-#### `includes/`
-- **`includes/session_check.php`**: Session enforcement + role authorization.
-- **`includes/header.php`**: Shared UI layout; role-based sidebar; notification feed.
-- **`includes/footer.php`**: Closes layout; loads JS; notification panel toggle.
+#### Table Name: `farmers`
+Purpose: Stores authentication and profile data for registered farmers who publish products and fulfil orders.
 
-#### `admin/`
-- **`admin/dashboard.php`**: Global stats; recent orders; quick approve/reject for pending products.
-- **`admin/manage_users.php`**: Lists farmers/customers; block/unblock; delete user.
-- **`admin/manage_products.php`**: View/filter products; approve/reject/delete.
-- **`admin/manage_orders.php`**: View/filter orders; override statuses.
-- **`admin/reports.php`**: Analytics tables; CSV export endpoints (sales/products/users).
+| Field name | Data type | Size | Constraints | Description |
+|---|---|---:|---|---|
+| Farmer_ID | INT | 11 | Primary Key, Auto Increment | Unique farmer identifier |
+| Name | VARCHAR | 100 | Not Null | Farmer name |
+| Email | VARCHAR | 191 | Unique, Not Null | Login email address |
+| Password | VARCHAR | 255 | Not Null | Hashed password |
+| Phone | VARCHAR | 20 | - | Contact number |
+| Address | TEXT | - | - | Location/address details |
+| Status | ENUM | - | Default 'active' | Account status (active/blocked) |
+| Created_At | TIMESTAMP | - | Default Current Timestamp | Record creation time |
 
-#### `farmer/`
-- **`farmer/dashboard.php`**: Farmer stats; recent products; recent orders.
-- **`farmer/add_product.php`**: Create listing with optional image upload; new listings are `pending`.
-- **`farmer/my_products.php`**: View/filter own listings; delete listing; edit navigation.
-- **`farmer/edit_product.php`**: Update listing; resets status to `pending`; image replace supported.
-- **`farmer/my_orders.php`**: View/filter orders for this farmer; update status; cancel.
+#### Table Name: `customers`
+Purpose: Stores authentication and profile data for customers who browse products and place orders.
 
-#### `customer/`
-- **`customer/dashboard.php`**: Customer stats; recent orders; recommended products.
-- **`customer/browse.php`**: Browse approved products; filter by category; search by product/farmer.
-- **`customer/product_detail.php`**: View details; start order with quantity.
-- **`customer/place_order.php`**: Transaction-safe order creation; decrements stock; captures delivery address/notes.
-- **`customer/my_orders.php`**: View/filter orders; cancel only when status is `placed` (restores stock).
+| Field name | Data type | Size | Constraints | Description |
+|---|---|---:|---|---|
+| Customer_ID | INT | 11 | Primary Key, Auto Increment | Unique customer identifier |
+| Name | VARCHAR | 100 | Not Null | Customer name |
+| Email | VARCHAR | 191 | Unique, Not Null | Login email address |
+| Password | VARCHAR | 255 | Not Null | Hashed password |
+| Phone | VARCHAR | 20 | - | Contact number |
+| Address | TEXT | - | - | Customer address |
+| Status | ENUM | - | Default 'active' | Account status (active/blocked) |
+| Created_At | TIMESTAMP | - | Default Current Timestamp | Record creation time |
 
-#### `setup/`
-- **`setup/install.php`**: Creates database and tables; seeds initial minimal demo data if needed.
-- **`setup/seed_data.php`**: Alternate seeding script with Tamil Nadu sample entries.
-- **`setup/verify_seed.php`**: Seed verification page (if present in your repo).
+#### Table Name: `products`
+Purpose: Maintains product listings published by farmers and moderated by administrators before marketplace visibility.
 
-#### `uploads/`
-- **`uploads/products/`**: Stores farmer-uploaded product images.
+| Field name | Data type | Size | Constraints | Description |
+|---|---|---:|---|---|
+| Product_ID | INT | 11 | Primary Key, Auto Increment | Unique product identifier |
+| Farmer_ID | INT | 11 | Foreign Key | References `farmers.Farmer_ID` |
+| Product_Name | VARCHAR | 200 | Not Null | Product title/name |
+| Category | ENUM | - | Not Null | Product category |
+| Price | DECIMAL | 10,2 | Not Null | Price per unit |
+| Quantity | INT | 11 | Not Null | Available stock units |
+| Description | TEXT | - | - | Product description |
+| Image_Path | VARCHAR | 255 | - | Image filename/path |
+| Status | ENUM | - | Default 'pending' | Listing state (pending/approved/rejected) |
+| Created_At | TIMESTAMP | - | Default Current Timestamp | Record creation time |
+
+#### Table Name: `orders`
+Purpose: Stores procurement transactions between customers and farmers including delivery and fulfilment status.
+
+| Field name | Data type | Size | Constraints | Description |
+|---|---|---:|---|---|
+| Order_ID | INT | 11 | Primary Key, Auto Increment | Unique order identifier |
+| Customer_ID | INT | 11 | Foreign Key | References `customers.Customer_ID` |
+| Product_ID | INT | 11 | Foreign Key | References `products.Product_ID` |
+| Farmer_ID | INT | 11 | Foreign Key | References `farmers.Farmer_ID` |
+| Quantity | INT | 11 | Not Null | Ordered units |
+| Total_Amount | DECIMAL | 10,2 | Not Null | Computed order total |
+| Date | DATETIME | - | Default Current Timestamp | Order date/time |
+| Status | ENUM | - | Default 'placed' | placed/confirmed/ready/delivered/cancelled |
+| Delivery_Address | TEXT | - | - | Delivery address |
+| Notes | TEXT | - | - | Customer notes |
+| Created_At | TIMESTAMP | - | Default Current Timestamp | Record creation time |
+
+#### Table Name: `reports`
+Purpose: Stores report metadata and optional stored report payloads, while the UI also supports on-demand CSV exports.
+
+| Field name | Data type | Size | Constraints | Description |
+|---|---|---:|---|---|
+| Report_ID | INT | 11 | Primary Key, Auto Increment | Unique report identifier |
+| Report_Type | ENUM | - | Not Null | sales/products/users/monthly |
+| Generated_By_Role | ENUM | - | Not Null | admin/farmer/customer |
+| Generated_By_ID | INT | 11 | Not Null | Generator user id |
+| Report_Data | TEXT | - | - | Stored report data payload |
+| Generated_At | TIMESTAMP | - | Default Current Timestamp | Report generation time |
+
+#### File Structure Summary (Implementation Files)
+The PHP implementation is organized so that shared configuration and UI elements are reused across pages, while each role is grouped into its own module directory. The entry point `index.php` serves as the landing interface, `db.php` provides the PDO connection and shared helpers, the `auth/` folder contains login and registration flows, the `includes/` folder contains session enforcement and layout, the `admin/`, `farmer/`, and `customer/` folders contain role-specific screens, and the `setup/` and seeding scripts support database initialization and demo data generation. Product images uploaded by farmers are stored inside `uploads/products/`.
 
 ---
 
 ### 3.4 Module Specifications (Page 14)
+The system architecture is divided into several modules to handle specific administrative and operational tasks. Each module is designed to interact with the core database while providing a seamless user interface for the respective role. In Farm2Market, the module division is based on user responsibility and the workflow of listing, moderation, procurement, and fulfilment.
 
-#### Admin Module
-- **Login**: Admin role authenticates via `admin` table.
-- **User management**: Block/unblock or delete farmers/customers.
-- **Product moderation**: Approve/reject pending products; delete listings.
-- **Order control**: View all orders; override status (logistics control).
-- **Reports**: Export CSV for sales, products distribution, and user status.
+#### Modules List
+The module list of Farm2Market includes user authentication and session management, an administrator console for user/product/order management and reporting, a farmer inventory module for product management, a farmer fulfilment module for order processing, a customer marketplace module for browsing and product details, a customer procurement module for order placement and tracking, and a reporting/export module that generates analytics outputs in CSV format.
 
-#### Farmer Module
-- **Profile (implicit)**: Session-based identity from `farmers` table.
-- **Product management**: Add/edit/delete products; uploads saved to `uploads/products/`; status resets to pending on edit.
-- **Order fulfilment**: View orders; update status; cancel if required.
+#### USER AUTHENTICATION AND SESSION MANAGEMENT
+This module handles secure login and logout for all roles by verifying hashed passwords against the database and initializing sessions with the correct role identity. Role-based access is enforced so that each page is accessible only to authorized users, and blocked accounts are prevented from starting sessions where applicable. The module also supports farmer/customer registration by validating input fields, hashing passwords, creating user records, and redirecting the user to the correct dashboard after successful onboarding.
 
-#### Customer Module
-- **Marketplace**: Browse/search approved products with stock > 0.
-- **Order placement**: Quantity validation; DB transaction with row-lock to prevent race conditions.
-- **Order archive**: Track order status; cancellation only when `placed` (inventory restored).
+#### ADMINISTRATOR CONSOLE (USERS, PRODUCTS, ORDERS, REPORTS)
+The administrator console provides system-wide oversight of all marketplace activity. It allows the administrator to manage farmers and customers by viewing account details, blocking or activating accounts, and deleting accounts when required. It also provides product moderation features where farmer listings are reviewed and moved through pending, approved, or rejected states before they appear in the customer marketplace. In addition, the administrator can monitor and override order status for logistics supervision and can generate analytics exports such as sales summaries and category distribution reports in CSV format.
+
+#### FARMER INVENTORY MODULE (PRODUCT MANAGEMENT)
+This module enables farmers to publish products into the marketplace by entering product name, category, price, available quantity, description, and optionally uploading an image. Newly added products are stored with a pending approval state so that administrative moderation can be applied. The module also supports editing and deleting existing products, and any modifications made to an approved product will reset its status back to pending to ensure that customers only see verified information. Uploaded images are stored in the dedicated uploads directory and are referenced through stored paths.
+
+#### FARMER FULFILMENT MODULE (ORDER PROCESSING)
+The fulfilment module allows farmers to view procurement requests placed by customers for products owned by that farmer. Farmers can filter orders by status, view delivery coordinates and customer contact information, and update the fulfilment pipeline by marking orders as confirmed, ready, delivered, or cancelled based on operational conditions. This module ensures that farmers have a clear and trackable view of their active delivery pipeline and completed transactions.
+
+#### CUSTOMER MARKETPLACE MODULE (BROWSE/SEARCH/DETAILS)
+The customer marketplace module provides a catalog view that displays only approved products with available stock. Customers can apply category filters, execute keyword searches by product name or farmer name, and open a product detail screen to view price, stock, description, and provider information. The module is designed to simplify discovery while keeping product presentation consistent and moderated.
+
+#### CUSTOMER PROCUREMENT MODULE (ORDER PLACEMENT AND TRACKING)
+This module handles order placement by allowing customers to choose a valid quantity and submit delivery address details and optional notes. The system calculates the total amount based on unit price and quantity and records the order into the database. Inventory accuracy is maintained by executing the order process inside a database transaction with row-level locking, preventing oversell when concurrent requests occur. Customers can track the status of their orders in an archive screen and are allowed to cancel only when the order is still in the placed state, in which case stock is restored.
+
+#### REPORTING AND EXPORT MODULE (CSV ANALYTICS)
+The reporting module provides analytics outputs for administrative monitoring and documentation. Reports include monthly revenue matrices, category distribution summaries, and user activity status summaries. Exports are generated as CSV files to enable easy printing, analysis, and integration with spreadsheet tools, supporting institutional record keeping and decision making.
 
 ---
 
 ## CHAPTER 4 — TESTING AND IMPLEMENTATION (Page 16)
 
 ### 4.1 System Testing (Page 16)
+System testing was performed to ensure that Farm2Market functions correctly at component level and as an integrated marketplace workflow. Individual forms were validated for required fields, password rules, and safe handling of file uploads, while page access was tested to confirm that role-based authorization prevents unauthorized access. Integration testing focused on confirming that the full workflow operates smoothly from farmer listing creation to administrator approval, customer browsing, order placement, inventory reduction, and farmer fulfilment updates. Database integrity testing verified that foreign key relationships remain valid and that order placement does not oversell inventory because the stock update is executed inside a transaction with row-level locking.
 
-#### Testing types performed
-- **Unit-level checks**: Form validations (required fields, password match, file type/size).
-- **Integration testing**: End-to-end flow across modules (list → approve → browse → order → fulfil).
-- **Security testing (basic)**: Session checks, role authorization, blocked user login restriction.
-- **Database integrity**: Foreign keys and transaction-based stock updates.
-
-#### Sample test cases
-| Test Case ID | Scenario | Expected Result |
-|---|---|---|
-| TC-01 | Login with valid admin credentials | Redirect to `admin/dashboard.php` |
-| TC-02 | Blocked farmer tries to login | Show “Account is blocked” |
-| TC-03 | Farmer adds product | Product created with `Status='pending'` |
-| TC-04 | Admin approves product | Product appears in customer marketplace |
-| TC-05 | Customer orders qty \> stock | Order prevented; error shown |
-| TC-06 | Two customers order same last-stock item | Only one succeeds (row lock prevents oversell) |
-| TC-07 | Customer cancels “placed” order | Order status becomes cancelled and stock restored |
-| TC-08 | Customer cancels “confirmed” order | Cancellation denied (status locked) |
+To document the testing process, representative test scenarios were executed, including successful logins for each role, blocked account login rejection, product creation with default pending state, administrative approval enabling marketplace visibility, quantity validation preventing orders above available stock, concurrency protection for last-stock purchases, cancellation rules that allow cancellation only while an order is in placed state, and status-lock behavior that prevents customers from cancelling after confirmation. The observed results matched expected behavior, confirming functional correctness and workflow consistency.
 
 ---
 
 ### 4.2 Implementation (Page 18)
+The implementation phase focuses on converting the design into a working web application by creating the database schema, building role-based PHP modules, and integrating them with a unified user interface. The database is implemented on MySQL/MariaDB in the XAMPP environment, where structured table definitions are executed to create the normalized tables required for administrators, farmers, customers, products, orders, and optional reports. Primary keys uniquely identify each record and foreign keys maintain referential integrity between products, farmers, customers, and orders. The order-placement workflow is implemented using transaction control and row-level locking to maintain correct inventory values under concurrent access.
 
-#### Installation / Setup steps (XAMPP)
-1. Place project folder in `htdocs/` (already done: `Farm2Market/`).
-2. Start **Apache** and **MySQL** in XAMPP.
-3. Initialize database schema by opening:
-   - `setup/install.php` (creates `farm2market_db` + tables and inserts minimal sample data)
-4. (Optional) Seed larger demo dataset by opening:
-   - `seed_data.php` (adds many farmers/customers/products if not present)
-5. Open the system landing page:
-   - `index.php`
+The backend is implemented in PHP using PDO for database connectivity and prepared statements for secure query execution. User authentication uses password hashing and session management for role-based access control, and access enforcement is applied across role pages using a shared session-check include. The frontend is implemented using HTML, CSS, and JavaScript, providing responsive dashboards and role-specific navigation. Product image uploads are handled on the farmer side with file type and file size validation, and files are stored in the designated uploads directory.
 
-#### Default demo credentials (as seeded)
-- **Admin**: `admin@farm2market.com` / `admin123`
-- **Farmer** (example): `anbarasu@farm.com` / `password123`
-- **Customer** (example): `karthik@buyer.com` / `password123`
+Deployment is performed locally using XAMPP. After placing the project directory under the Apache `htdocs` folder, Apache and MySQL services are started. The database schema can then be initialized by opening the installer page `setup/install.php`, and a richer dataset for demonstration can be inserted by running `seed_data.php` where required. Once installed, the application can be accessed through the landing page `index.php`, and users can log in using seeded credentials such as the administrator account `admin@farm2market.com` with password `admin123`, a farmer account such as `anbarasu@farm.com` with password `password123`, and a customer account such as `karthik@buyer.com` with password `password123`.
 
 ---
 
 ## CHAPTER 5 — CONCLUSION AND SUGGESTIONS (Page 20)
 
 ### 5.1 Conclusion (Page 20)
-Farm2Market successfully provides a moderated, role-based marketplace that enables farmers to list produce and customers to procure products directly. The system maintains data integrity using relational schema constraints and inventory-safe transactions during ordering, while the admin module ensures control and reliability through approvals, user moderation, and reporting.
+Farm2Market successfully provides a moderated role-based marketplace that enables farmers to list produce and customers to procure items directly through a structured digital workflow. The system maintains data accuracy and integrity through a normalized relational schema with enforced relationships between users, products, and orders, and it ensures correct inventory values by processing order placement through transaction-safe updates. The administrator module strengthens reliability by controlling product visibility through approvals, enforcing user discipline through block/activate actions, supervising the full order pipeline, and enabling practical reporting outputs for marketplace monitoring. Overall, the project demonstrates that a locally deployable PHP-MySQL system can modernize agricultural procurement workflows by improving transparency, traceability, and operational efficiency.
 
 ### 5.2 Suggestions for Future Enhancement (Page 20)
-- Add **multi-item cart** and consolidated checkout (currently orders are per-product).
-- Add **delivery scheduling** and dispatch tracking.
-- Add **digital payments** and invoice generation.
-- Add **audit logs** for admin actions (user blocks, approvals, overrides).
-- Add **product reviews/ratings** and dispute workflow.
-- Store generated reports into `reports` table for historical retrieval (currently CSV is generated on-demand).
+Future enhancement possibilities include introducing a multi-item cart so that customers can purchase multiple products in a single consolidated checkout, along with improved delivery scheduling features such as time-slot selection and dispatch tracking. The platform can be extended to support digital payment gateways and invoice generation for more formal procurement records. A structured audit log system can also be introduced to record administrative actions such as approvals, rejections, user blocks, and order overrides, thereby improving governance and accountability. Additional user-facing features such as product ratings, reviews, and dispute handling can improve marketplace trust, and generated report outputs can be stored persistently in the reports table for historical comparison rather than being limited to on-demand exports.
 
 ---
 
 ## BIBLIOGRAPHY (Page 21)
-- PHP Manual — PDO and sessions
-- MySQL 8 / MariaDB Documentation — transactions and row locking
-- OWASP guidelines for web application security (authentication/session handling)
+The PHP official documentation was referred for implementing PDO connectivity, password hashing, and session handling. MySQL/MariaDB documentation was referenced for relational schema design, foreign key constraints, and transaction concepts such as row-level locking used during order placement. OWASP web security guidance was used as a reference for secure authentication practices and safe input handling principles.
 
 ---
 
@@ -393,46 +407,37 @@ Farm2Market successfully provides a moderated, role-based marketplace that enabl
 ## APPENDIX – A (SCREEN FORMATS) (Page 22)
 
 ### A1. Authentication Page (Page 22)
-- `auth/login.php` (role-based login tabs)
-- `auth/register.php` (farmer/customer registration)
+![Authentication – Login](./uploads/report-screenshots/auth-login.png)
+
+![Authentication – Register](./uploads/report-screenshots/auth-register.png)
 
 ### A2. Admin Dashboard and Users (Page 22)
-- `admin/dashboard.php`
-- `admin/manage_users.php`
+![Admin – Dashboard](./uploads/report-screenshots/admin-dashboard.png)
 
 ### A3. Products and Moderation (Page 23)
-- `admin/manage_products.php`
-- `farmer/add_product.php`
-- `farmer/my_products.php`
-- `farmer/edit_product.php`
-- `customer/browse.php`
-- `customer/product_detail.php`
+![Admin – Manage Products](./uploads/report-screenshots/admin-manage-products.png)
+
+![Farmer – My Products](./uploads/report-screenshots/farmer-my-products.png)
+
+![Customer – Browse Products](./uploads/report-screenshots/customer-browse.png)
+
+![Customer – Product Detail](./uploads/report-screenshots/customer-product-detail.png)
 
 ### A4. Orders and Matches (Page 25)
-*(In this project, “Matches” corresponds to “Orders / Fulfilment Logs”.)*
-- `customer/place_order.php`
-- `customer/my_orders.php`
-- `farmer/my_orders.php`
-- `admin/manage_orders.php`
+![Customer – Place Order](./uploads/report-screenshots/customer-place-order.png)
 
 ---
 
 ## APPENDIX – B (REPORT FORMS) (Page 26)
 
-### Report 1 — Tournament Analytics (Page 26)
-*(In this project, “Tournament Analytics” corresponds to **Monthly Revenue Matrix**.)*
-- Source: `admin/reports.php` export `?export=sales`
-- Output fields: Month, Total Orders, Total Revenue
+### Report 1 — Sales Analytics (Page 26)
+![Report 1 – Sales Analytics](./uploads/report-screenshots/admin-reports.png)
 
-### Report 2 — Performance Tracking (Page 26)
-*(Corresponds to **Category Distribution**.)*
-- Source: `admin/reports.php` export `?export=products`
-- Output fields: Category, Product Count, Total Stock Available
+### Report 2 — Product Distribution (Page 26)
+![Report 2 – Product Distribution](./uploads/report-screenshots/admin-reports.png)
 
-### Report 3 — Participation Data (Page 27)
-*(Corresponds to **Active/Blocked Users**.)*
-- Source: `admin/reports.php` export `?export=users`
-- Output fields: Role, Total Active, Total Blocked
+### Report 3 — User Status Summary (Page 27)
+![Report 3 – User Status Summary](./uploads/report-screenshots/admin-reports.png)
 
-### Report 4 — Athlete Statistics (Page 27)
-*(Optional extension: per-farmer sales and fulfilment statistics can be added in future.)*
+### Report 4 — Farmer Sales and Fulfilment Summary (Page 27)
+![Report 4 – Farmer Sales and Fulfilment Summary](./uploads/report-screenshots/admin-reports.png)
