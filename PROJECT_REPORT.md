@@ -30,36 +30,21 @@ The scope of this project encompasses the design and implementation of a role-ba
 
 ### 2.1 PROBLEM DEFINITION
 
-#### EXISTING SYSTEM
-The existing agricultural trade system in rural areas relies heavily on physical markets and multiple layers of intermediaries or middlemen. Farmers typically transport their produce to local hubs where brokers dictate prices, often without providing transparency regarding the final market value. This manual process is time-consuming and often forces farmers to sell at lower rates due to the perishable nature of their goods and the lack of alternative buyers.
+The existing agricultural trade system in rural areas remains heavily reliant on physical markets and multiple layers of intermediaries, commonly known as middlemen. Farmers typically transport their heavy produce to local trading hubs where brokers dictate purchase prices, often without providing any transparency regarding the actual market value or end-consumer demand. This manual and opaque process is remarkably time-consuming and frequently forces farmers to sell at significantly lower rates due to the perishable nature of their goods and the lack of alternative digital avenues to reach interested buyers.
 
-#### LIMITATIONS OF EXISTING SYSTEM
-*   **Presence of Middlemen**: A significant portion of the profit is taken by intermediaries as commission.
-*   **Lack of Price Transparency**: Farmers have no way to compare prices or verify the demand for their crops digitally.
-*   **Limited Reach**: Farmers are restricted to selling only to buyers who are physically present at the local market.
-*   **Offline Dependency**: Traditional methods are purely verbal and physical, with no recorded history or digital tracking of inquiries or transactions.
+The limitations of this traditional system are numerous and deeply impact the rural economy. The most significant drawback is the presence of middlemen who absorb a substantial portion of the profit as commissions, leaving the actual producers with minimal margins. Furthermore, there is a total lack of price transparency, as farmers have no digital means to compare rates or verify demand before committing to a sale. The reach is also restricted to buyers physically present at the market, and the entire process lacks any digital record-keeping, making it impossible to track inquiry history or analyze seasonal market trends for future planning.
 
 ### 2.2 SYSTEM STUDY
 
-#### TECHNICAL FEASIBILITY
-The proposed system is technically feasible as it utilizes standard web technologies—React.js for the frontend and Node.js with MySQL for the backend. It is designed to run on any local machine (localhost) using XAMPP, requiring no internet connectivity. The hardware required is minimal, making it compatible with basic laptop or desktop setups commonly available.
+The proposed system is technically feasible as it leverages a modern yet accessible technology stack consisting of React.js for the user interface and Node.js with MySQL for the backend architecture. It has been specifically designed to function within a local-host environment using XAMPP, meaning it requires zero internet connectivity to operate. The hardware requirements are kept to a minimum so that the platform can be hosted on basic desktop or laptop configurations that are already commonly found in administrative offices or local community centers.
 
-#### ECONOMIC FEASIBILITY
-Form2Market is highly cost-effective as it is built using open-source technologies. There are no recurring internet subscription costs or expensive server hosting fees. Since it connects farmers and buyers directly, the economic benefit to the local community is immediate through the elimination of broker commissions.
-
-#### OPERATIONAL FEASIBILITY
-The platform is designed with a simple and intuitive user interface, ensuring that users with basic digital literacy can navigate the dashboards. It fits into the existing operational flow of agricultural trade by digitizing the inquiry process, making it easier for farmers to manage their inventory and for buyers to find fresh produce without leaving their location.
+Economic feasibility is a core strength of Form2Market because it is constructed entirely using open-source technologies, eliminating the need for expensive software licenses or recurring internet subscription fees. Since the primary goal is to connect farmers and buyers directly, the economic benefits remain within the local community by bypassing broker commissions. Operationally, the platform features an intuitive design that caters to users with varying levels of digital literacy. It integrates smoothly into the existing workflow of agricultural trade by digitizing the inquiry process, allowing farmers to manage inventory from their own location while providing buyers with a professional interface to discover fresh produce.
 
 ### 2.3 PROPOSED SYSTEM
 
-The proposed system, **Form2Market**, is a digital bridge that connects farmers directly to buyers via a local-area network (LAN) or a single-host machine. By providing a role-based dashboard for Farmers, Buyers, and Admins, the system centralizes all product listings and communication in one searchable, offline platform.
+The proposed Form2Market system acts as a digital bridge that connects farmers directly to buyers through a local-area network or a single shared machine. By implementing a sophisticated role-based access control system, the platform ensures that Farmers, Buyers, and Administrators each have a dedicated workspace tailored to their specific needs. This centralized approach allows all product listings and communications to be managed within a single, searchable digital environment that remains resilient even in the absence of a wider internet connection.
 
-#### ADVANTAGES OF PROPOSED SYSTEM
-*   **Direct Interaction**: Buyers and farmers can communicate directly through the inquiry system.
-*   **Zero Commissions**: Eliminating middlemen ensures farmers receive the full value of their sale.
-*   **Offline Resilience**: The system works 100% without internet, making it reliable for rural deployment.
-*   **Organized Management**: Farmers can track their product listings and buyer inquiries digitally.
-*   **Moderated Environment**: The Admin dashboard ensures that the platform remains secure and only appropriate listings are displayed.
+The advantages of this proposed system are extensive, starting with the facilitation of direct interaction which allows buyers and farmers to negotiate through a dedicated inquiry system. By eliminating the middleman entirely, the system ensures that farmers receive the full value for their labor while buyers get access to better prices. The offline resilience of the platform makes it uniquely suited for rural deployment where connectivity is unreliable. Additionally, the organized digital management tools allow farmers to keep a clear history of their transactions and inquiries, while the administrative dashboard ensures that the platform remains a safe and moderated space for all participants.
 
 ---
 
@@ -67,21 +52,12 @@ The proposed system, **Form2Market**, is a digital bridge that connects farmers 
 
 ### 3.1 HARDWARE REQUIREMENTS
 
-The system is designed to run on standard, modern computing hardware. Since it is an offline-first local deployment, the following hardware is recommended for the host machine (Server):
+The Form2Market system is optimized to run on standard computing hardware that is widely available in most corporate or educational environments. For the primary host machine acting as the local server, a processor such as an Intel Core i3 is sufficient as a minimum requirement, though an Intel Core i5 or higher is recommended to ensure smooth performance during concurrent user interactions. The host machine should ideally have at least 4 GB of RAM, with 8 GB being the preferred configuration for optimal multitasking and database responsiveness.
 
-*   **Processor**: Intel Core i3 or equivalent (minimum); Intel Core i5 or higher (recommended for better performance).
-*   **RAM**: 4 GB (minimum); 8 GB or higher (recommended).
-*   **Hard Disk**: 500 MB of available space for application files and local database storage.
-*   **Network Interface**: Wi-Fi adapter or Ethernet port (for hosting the marketplace over a local network/LAN).
-*   **Client Devices**: Any device with a modern web browser (Laptop, Desktop, or Smartphone) connected to the same local network.
+Storage requirements are remarkably light, needing only about 500 MB of available hard disk space to accommodate the application source code, its dependencies, and the local database storage for product images and user data. To enable the marketplace functionality over a local network, the host machine must be equipped with a functional Wi-Fi adapter or an Ethernet port. On the client side, any device with a modern web browser—including tablets, smartphones, and older desktop computers—can access the marketplace as long as they are connected to the same local area network as the host server.
 
 ### 3.2 SOFTWARE REQUIREMENTS
 
-The platform relies on a specific software stack to ensure reliable offline operations:
+The platform is built upon a reliable software stack that prioritizes stability and local performance. It is fully compatible with modern operating systems such as Windows 10 and Windows 11, with 64-bit versions being recommended for better resource management. The core of the database operations is handled by the XAMPP Control Panel, specifically utilizing the MySQL or MariaDB services which provide a robust relational database environment. The backend logic is powered by Node.js, specifically version 16.x or higher, which provides the necessary runtime environment for the Express-based API server.
 
-*   **Operating System**: Windows 10 or Windows 11 (64-bit recommended).
-*   **Database Server**: XAMPP Control Panel (specifically MySQL/MariaDB service).
-*   **Backend Environment**: Node.js (Version 16.x or higher).
-*   **Package Manager**: npm (Node Package Manager) for dependency management.
-*   **Web Browser**: Google Chrome, Mozilla Firefox, or Microsoft Edge (Latest versions recommended for React compatibility).
-*   **Development Tools**: Visual Studio Code (for any code modifications or local configuration).
+For development and maintenance, the system uses npm as the primary package manager to handle all internal dependencies efficiently. Users can access the platform through any modern web browser such as Google Chrome, Mozilla Firefox, or Microsoft Edge, provided they are updated to recent versions to support modern React components and CSS styling. If any local configurations or code modifications are required, Visual Studio Code is the recommended development tool due to its excellent support for the JavaScript and Markdown languages used throughout the project.
