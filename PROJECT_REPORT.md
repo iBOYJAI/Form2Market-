@@ -163,7 +163,13 @@ Looking ahead, while the current system provides a solid foundation for offline 
 
 ## BIBLIOGRAPHY
 
-The development of the Farm to Market system was informed by several key technical resources and documentation materials. The core backend architecture was built following the official Node.js and Express.js documentation, which provided essential guidance on RESTful API design and middleware implementation. Database management was strictly aligned with the MySQL 8.0 Reference Manual to ensure optimized query performance and data integrity. On the frontend, the React.js official documentation was the primary resource for state management and component structure, while MDN Web Docs served as the comprehensive reference for modern CSS and JavaScript standards throughout the design and development phases.
+The development of the Farm to Market system was informed by several key technical resources, including authoritative books and official digital documentation. The core architectural decisions were guided by a combination of academic principles and modern industrial standards to ensure the platform's reliability and scalability within an offline environment.
+
+### BOOK REFERENCE
+The development of the Farm to Market system was supported by several authoritative technical texts. "Node.js Web Development" by David Herron provided a comprehensive foundation for building scalable server-side applications using JavaScript, particularly in structuring the backend and managing asynchronous operations. Additionally, "Learning React: Modern Patterns as Developing React Apps" by Alex Banks and Eve Porcello was instrumental in designing the modular frontend components and managing the global application states through the context API. For database architecture, "MySQL High Availability" by Charles Bell served as a guide for ensuring data integrity and optimizing the relational schema within the XAMPP environment.
+
+### URL REFERENCE
+The project also relied heavily on various official online documentation and community resources. The React official documentation (https://react.dev) was the primary technical guide for implementing the responsive user interface and component life cycles. The Node.js API reference (https://nodejs.org/api) and the Express.js framework guide (https://expressjs.com) provided the necessary specifications for building a robust and secure API. Furthermore, the MySQL Reference Manual (https://dev.mysql.com/doc) was used for fine-tuning database connections and local storage, while MDN Web Docs (https://developer.mozilla.org) provided the definitive reference for cross-browser CSS and modern JavaScript standards.
 
 ---
 
